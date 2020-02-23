@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Produits — La Chouette Coop</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.3.1/themes/algolia-min.css"
+      integrity="sha256-HB49n/BZjuqiCtQQf49OdZn63XuKFaxcIHWf0HNKte8="
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="container mx-auto">
+      <h1 class="mt-5 mb-10 text-4xl">
+        Les produits de La Chouette Coop
+      </h1>
+
+      <div class="flex mb-4">
+        <div class="w-1/4 p-2 pt-0">
+          <h2 class="mb-5 text-2xl">
+            Filtres
+          </h2>
+
+          <h3 class="mt-6 mb-2 text-xl">Prix</h3>
+          <div id="price" class="ml-2 mr-6"></div>
+
+          <h3 class="mt-6 mb-2 text-xl">Labels</h3>
+          <div id="labels"></div>
+
+          <h3 class="mt-6 mb-2 text-xl">Fournisseurs</h3>
+          <div id="suppliers"></div>
+
+          <h3 class="mt-6 mb-2 text-xl">Catégorie</h3>
+          <div id="categories"></div>
+
+          <div id="powered-by" class="mt-8"></div>
+        </div>
+
+        <div class="w-3/4 p-2 pt-0">
+          <div class="mb-5">
+            <div id="searchbox"></div>
+            <div id="current-refinements" class="my-2"></div>
+            <div id="stats"></div>
+          </div>
+
+          <div class="my-5">
+            <div id="hits"></div>
+          </div>
+
+          <div id="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/algoliasearch@4.0.0/dist/algoliasearch-lite.umd.js"
+      integrity="sha256-MfeKq2Aw9VAkaE9Caes2NOxQf6vUa8Av0JqcUXUGkd0="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.0.0/dist/instantsearch.production.min.js"
+      integrity="sha256-6S7q0JJs/Kx4kb/fv0oMjS855QTz5Rc2hh9AkIUjUsk="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const searchClient = algoliasearch(
+        "M6AKDBX36Z",
+        "200ad253b958794d0ff8a2a187d74560"
+      );
+
+      const search = instantsearch({
+        indexName: "produits",
+        searchClient,
+        routing: true
+      });
+
+      search.addWidgets([
+        instantsearch.widgets.configure({
+          hitsPerPage: 50,
+          filters: "price > 0"
+        }),
+
+        instantsearch.widgets.searchBox({
+          container: "#searchbox"
+        }),
+        instantsearch.widgets.currentRefinements({
+          container: "#current-refinements"
+        }),
+        instantsearch.widgets.stats({
+          container: "#stats"
+        }),
+
+        instantsearch.widgets.rangeSlider({
+          container: "#price",
+          attribute: "price"
+        }),
+        instantsearch.widgets.refinementList({
+          container: "#labels",
+          attribute: "labels"
+        }),
+        instantsearch.widgets.refinementList({
+          container: "#suppliers",
+          attribute: "supplier"
+        }),
+        instantsearch.widgets.hierarchicalMenu({
+          container: "#categories",
+          attributes: [
+            "categories.lvl1",
+            "categories.lvl2",
+            "categories.lvl3",
+            "categories.lvl4",
+            "categories.lvl5",
+            "categories.lvl6"
+          ]
+        }),
+
+        instantsearch.widgets.pagination({
+          container: "#pagination"
+        }),
+
+        instantsearch.widgets.hits({
+          container: "#hits",
+          templates: {
+            item(hit) {
+              return `
+                <article>
+                  <p class="w-1/4 text-4xl float-right">${hit.price}€</p>
+                  <p class="w-3/4 text-lg font-semibold">${hit.name}</p>
+                  <p class="text-xs">${hit.barCode}</p>
+
+                  <ul class="mt-4 flex flex-row items-stretch">
+                    <li class="flex-1" title="Fournisseur">${hit.supplier}</li>
+                    <li class="flex-1" title="Labels">${hit.labels}</li>
+                    <li class="flex-1" title="Origine">${hit.origin}</li>
+                  </ul>
+                </article>
+              `;
+            }
+          },
+          cssClasses: {
+            item: "w-full"
+          }
+        }),
+
+        instantsearch.widgets.poweredBy({
+          container: "#powered-by"
+        })
+      ]);
+
+      search.start();
+    </script>
+  </body>
+</html>
