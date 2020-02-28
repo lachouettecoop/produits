@@ -15,6 +15,31 @@
       href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
       rel="stylesheet"
     />
+
+    <style>
+      .state {
+        border-left: 5px solid;
+        padding-left: 1rem;
+      }
+      /**
+        - 0: "Vente au Lab"
+        - 200: "Vente au Supermarché"
+        - 500: "Déréférencé"
+        - 700: "Requalification en cours"
+        - 1000: "Archivé"
+      */
+      .state--0 {
+        border-color: green;
+      }
+      .state--200 {
+        border-color: orange;
+        opacity: 0.7;
+      }
+      .state--500, .state--700, .state--1000 {
+        opacity: 0.3;
+        border-color: gray;
+      }
+    </style>
   </head>
 
   <body>
@@ -40,6 +65,9 @@
 
           <h3 class="mt-6 mb-2 text-xl">Catégorie</h3>
           <div id="categories"></div>
+
+          <h3 class="mt-6 mb-2 text-xl">Statut</h3>
+          <div id="states"></div>
 
           <div id="powered-by" class="mt-8"></div>
         </div>
@@ -104,11 +132,17 @@
         }),
         instantsearch.widgets.refinementList({
           container: "#labels",
-          attribute: "labels"
+          attribute: "labels",
+          showMore: true
         }),
         instantsearch.widgets.refinementList({
           container: "#suppliers",
-          attribute: "supplier"
+          attribute: "supplier",
+          showMore: true
+        }),
+        instantsearch.widgets.refinementList({
+          container: "#states",
+          attribute: "saleState"
         }),
         instantsearch.widgets.hierarchicalMenu({
           container: "#categories",
@@ -131,16 +165,26 @@
           templates: {
             item(hit) {
               return `
-                <article>
-                  <p class="w-1/4 text-4xl float-right">${hit.price}€</p>
-                  <p class="w-3/4 text-lg font-semibold">${hit.name}</p>
-                  <p class="text-xs">${hit.barCode}</p>
+                <article class="state state--${hit.saleStateScore} flex">
+                  <div class="w-3/4">
+                    <p class="text-lg font-semibold">${hit.name}</p>
+                    <p class="text-xs mt-2">
+                      <span class="shadow px-2 py-1 mr-2 bg-green-600 text-white">${hit.saleState}</span> ${hit.barCode}</p>
 
-                  <ul class="mt-4 flex flex-row items-stretch">
-                    <li class="flex-1" title="Fournisseur">${hit.supplier}</li>
-                    <li class="flex-1" title="Labels">${hit.labels}</li>
-                    <li class="flex-1" title="Origine">${hit.origin}</li>
-                  </ul>
+                    <ul class="mt-4 flex flex-row items-stretch">
+                      <li class="flex-1" title="Fournisseur">${hit.supplier}</li>
+                      <li class="flex-1" title="Labels">${hit.labels}</li>
+                      <li class="flex-1" title="Origine">${hit.origin}</li>
+                    </ul>
+                  </div>
+
+                  <div class="w-1/4">
+                    <p class="text-4xl">${hit.price}€</p>
+                    <div class="flex mt-2 items-center">
+                      <p>Stock</p>
+                      <p class="ml-2 px-2 py-1 font-bold bg-gray-700 text-white" title="Quantité en stock">${hit.qtyInStock}</p>
+                    </div>
+                  </div>
                 </article>
               `;
             }

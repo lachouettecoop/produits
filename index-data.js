@@ -25,8 +25,25 @@ const prepareForIndexing = row => {
     return categories.slice(0, level).join(" > ");
   };
 
-  // 'Quantité en stock': '9.0',
-  // 'Quantité prévue': '9.0',
+  const saleStateValues = row => {
+    if (row["Actif"] === "False") {
+      return [1000, "Archivé"];
+    }
+    if (row["Peut être vendu"] === "False") {
+      return [700, "Requalification en cours"];
+    }
+    if (row["Peut être acheté"] === "False") {
+      if (
+        row["Catégorie du point de vente/Nom affiché"].trim() === "Supermarché"
+      ) {
+        return [200, "Vente au Supermarché"];
+      }
+      return [500, "Déréférencé"];
+    }
+    return [0, "Vente au Lab"];
+  };
+
+  const [saleStateScore, saleStateValue] = saleStateValues(row);
   return {
     objectID: row["External ID"],
     active: row["Actif"] === "True",
@@ -36,6 +53,9 @@ const prepareForIndexing = row => {
     price: Number(row["Prix de vente"]),
     supplier: row["Fournisseur/Nom affiché"],
     origin: row["Pays d'origine/Nom du pays"],
+    saleState: saleStateValue,
+    saleStateScore: saleStateScore,
+    qtyInStock: Number(row["Quantité en stock"]),
     "categories.lvl1": categoryValue(1),
     "categories.lvl2": categoryValue(2),
     "categories.lvl3": categoryValue(3),
