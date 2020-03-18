@@ -164,13 +164,17 @@
           container: "#hits",
           templates: {
             item(hit) {
+              const image = hit.thumbnailPath
+                ? `https://raw.githubusercontent.com/lachouettecoop/produits/master/${hit.thumbnailPath}`
+                : "https://via.placeholder.com/128?text=Aucune+image";
+
               return `
                 <article class="state state--${hit.saleStateScore} flex">
                   <div class="w-1/5 pr-2">
                     <img
                       class="object-left"
                       alt=""
-                      src="${hit.thumbnailPath || "https://via.placeholder.com/128?text=Aucune+image"}" />
+                      src="${image}" />
                   </div>
 
                   <div class="w-3/5">
