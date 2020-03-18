@@ -15,7 +15,7 @@ const odooExport = fs.createReadStream(
   path.join(__dirname, "product.template.csv")
 );
 
-const prepareForIndexing = row => {
+const prepareForIndexing = async row => {
   const categories = row["Catégorie interne/Nom affiché"]
     .split(" / ")
     .filter(cat => cat !== "");
@@ -43,9 +43,16 @@ const prepareForIndexing = row => {
     return [0, "Vente au Lab"];
   };
 
+  let imgPath = null;
+  if (row["Image de taille moyenne"]) {
+    imgPath = `images/${row["External ID"]}.jpg`;
+    fs.writeFileSync(imgPath, row["Image de taille moyenne"], "base64");
+  }
+
   const [saleStateScore, saleStateValue] = saleStateValues(row);
   return {
     objectID: row["External ID"],
+    thumbnailPath: imgPath,
     active: row["Actif"] === "True",
     barCode: row["Code Barre"],
     name: row["Nom affiché"],
@@ -66,11 +73,10 @@ const prepareForIndexing = row => {
 };
 
 csv(odooExport)
-  .then(
-    rows =>
-      console.log(rows.length, "rows found. Converting.") ||
-      rows.map(prepareForIndexing)
-  )
+  .then(rows => {
+    console.log(rows.length, "rows found. Converting.");
+    return Promise.all(rows.map(prepareForIndexing));
+  })
   .then(
     records =>
       console.log("sending records to Algolia") ||

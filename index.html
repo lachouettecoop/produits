@@ -166,7 +166,14 @@
             item(hit) {
               return `
                 <article class="state state--${hit.saleStateScore} flex">
-                  <div class="w-3/4">
+                  <div class="w-1/5 pr-2">
+                    <img
+                      class="object-left"
+                      alt=""
+                      src="${hit.thumbnailPath || "https://via.placeholder.com/128?text=Aucune+image"}" />
+                  </div>
+
+                  <div class="w-3/5">
                     <p class="text-lg font-semibold">${hit.name}</p>
                     <p class="text-xs mt-2">
                       <span class="shadow px-2 py-1 mr-2 bg-green-600 text-white">${hit.saleState}</span> ${hit.barCode}</p>
@@ -178,7 +185,7 @@
                     </ul>
                   </div>
 
-                  <div class="w-1/4">
+                  <div class="w-1/5">
                     <p class="text-4xl">${hit.price}€</p>
                     <div class="flex mt-2 items-center">
                       <p>Stock</p>

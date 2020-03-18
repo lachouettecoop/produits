@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "index": "node index-data.js",
+    "index": "rm -rf images/* && node index-data.js",
     "start": "http-server ."
   },
   "keywords": [],
