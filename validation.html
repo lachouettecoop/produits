@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Valider votre commande Drive — La Chouette Coop</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="container mx-auto">
+      <img
+        class="float-right w-20 -mt-3"
+        alt="Logo de La Chouette Coop"
+        src="logo.jpg"
+      />
+      <h1 class="mt-5 mb-7 text-2xl">
+        <strong class="font-bold text-4xl">Le Drive</strong> de La Chouette Coop
+      </h1>
+
+      <div class="bg-red-200 my-5 py-3 px-4">
+        <p class="font-bold mb-2">
+          <strong>Cette plateforme de commande est encore imparfaite</strong>, aidez-nous
+          <a href="mailto:contact@pierre-martin.fr?subject=Bug rencontré sur le Drive LCC" class="underline hover:no-underline">en remontant les bugs rencontrés.</a>
+        </p>
+        <p class="text-sm text-gray-700">
+          Si vous rencontrez un problème bloquant, vous pouvez passer commande
+          par téléphone ou SMS au n°suivant :
+          <a href="tel:0780973045" class="text-blue-700 hover:text-blue-800">07 80 97 30 45</a> (procédure exceptionnelle de commande).
+        </p>
+      </div>
+
+      <h2 class="text-2xl pt-4 mb-4">Vérifiez votre commande avant de l'envoyer</h2>
+      <a href="/" class="text-gray-700 hover:text-black">&larr; Modifier la commande</a>
+      <div id="cart" class="mt-2"></div>
+    </div>
+
+    <script
+      src="https://unpkg.com/core-js-bundle@3.6.4/minified.js"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    ></script>
+
+    <script>
+      const content = window.localStorage.getItem('cart')
+        ? JSON.parse(window.localStorage.getItem('cart'))
+        : {};
+
+      const total = Object.values(content)
+        .map(
+          item => item.qty * item.product.price
+        )
+        .reduce(
+          (total, itemPrice) => total + itemPrice, 0
+        )
+        .toFixed(2);
+
+      const cartUrl = Object.keys(content).map(key => {
+        const id = key.replace('__export__.product_template_', '');
+        return `${id}=${content[key].qty}`
+      }).join('&');
+
+      const mailtoLink = [
+        `mailto:drive@lachouettecoop.fr?`,
+        `subject=${encodeURIComponent('Commande de ' + total + '€')}`,
+        `&body=${encodeURIComponent([
+          'Bonjour,',
+          '',
+          'Commande disponible sur https://drive.lachouettecoop.fr/preparation.html?' + cartUrl,
+          'Mon numéro de téléphone est le : ',
+        ].join('\n'))}`,
+      ].join('');
+
+      cart.innerHTML = `
+        <div class="bg-gray-300 shadow-md px-6 py-4 w-full">
+          <ul class="flex flex-col flex-wrap">
+          ${Object.keys(content).map(key => `
+            <li class="py-1 mb-2 flex justify-left items-center">
+              <img
+                class="rounded-full h-12 w-12 shadow-md"
+                src="${decodeURI(content[key].product.image)}"
+                title="${decodeURI(content[key].product.name)}"
+                alt=""
+              />
+              <p>
+                <span class="text-xs ml-4 mr-6">
+                  ${content[key].qty} × ${content[key].product.price.toFixed(2)}€
+                </span>
+
+                <span class="text-l">${decodeURI(content[key].product.name)}</span>
+              </p>
+            </li>
+          `).join('')}
+          </ul>
+
+          <div class="my-8">
+            <p>
+              Vous allez maintenant devoir transmettre la commande par email.
+            </p>
+            <p>
+              Veuillez vous assurer de bien <strong class="text-bold">indiquer votre numéro de téléphone dans l'email</strong> afin que la personne préparant votre commande puisse vous joindre si besoin, et vous informer lorsque la commande sera prête.
+            </p>
+            <p>
+              Le prix final exact vous sera confirmé une fois la préparation terminée.
+            </p>
+          </div>
+
+          <div class="flex flex-col flex-wrap py-2">
+            <a
+              class="m-auto w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 text-center"
+              title="Envoyer ma commande"
+              href="${mailtoLink}"
+              target="_blank"
+            >
+              Je transmet ma commande de ~${total}€ par email
+              ${feather.icons['send'].toSvg({
+                class: 'inline'
+              })}
+            </a>
+            <p class="text-xs text-gray-700 text-center">
+              En cas de problème, veuillez transmettre l'information suivante par email à <a href="mailto:drive@lachouettecoop.fr" class="underline">drive@lachouettecoop.fr</a> : <code class="select-all truncate font-mono px-1 bg-gray-100">${cartUrl}</code>
+            </p>
+          </div>
+        </div>
+      `;
+    </script>
+  </body>
+</html>

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
 
-    <title>Produits — La Chouette Coop</title>
+    <title>Drive — La Chouette Coop</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.3.1/themes/algolia-min.css"
@@ -44,11 +44,28 @@
 
   <body>
     <div class="container mx-auto">
-      <h1 class="mt-5 mb-10 text-4xl">
-        Les produits de La Chouette Coop
+      <img
+        class="float-right w-20 -mt-3"
+        alt="Logo de La Chouette Coop"
+        src="logo.jpg"
+      />
+      <h1 class="mt-5 mb-7 text-2xl">
+        <strong class="font-bold text-4xl">Le Drive</strong> de La Chouette Coop
       </h1>
 
-      <div class="flex mb-4">
+      <div class="bg-red-200 my-5 py-3 px-4 clear-both">
+        <p class="font-bold mb-2">
+          <strong>Cette plateforme de commande est encore imparfaite</strong>, aidez-nous
+          <a href="mailto:contact@pierre-martin.fr?subject=Bug rencontré sur le Drive LCC" class="underline hover:no-underline">en remontant les bugs rencontrés.</a>
+        </p>
+        <p class="text-sm text-gray-700">
+          Si vous rencontrez un problème bloquant, vous pouvez passer commande
+          par téléphone ou SMS au n°suivant :
+          <a href="tel:0780973045" class="text-blue-700 hover:text-blue-800">07 80 97 30 45</a> (procédure exceptionnelle de commande).
+        </p>
+      </div>
+
+      <div class="flex mb-64">
         <div class="w-1/4 p-2 pt-0">
           <h2 class="mb-5 text-2xl">
             Filtres
@@ -86,8 +103,13 @@
           <div id="pagination"></div>
         </div>
       </div>
+
+      <div id="cart"></div>
     </div>
 
+    <script
+      src="https://unpkg.com/core-js-bundle@3.6.4/minified.js"
+    ></script>
     <script
       src="https://cdn.jsdelivr.net/npm/algoliasearch@4.0.0/dist/algoliasearch-lite.umd.js"
       integrity="sha256-MfeKq2Aw9VAkaE9Caes2NOxQf6vUa8Av0JqcUXUGkd0="
@@ -98,7 +120,124 @@
       integrity="sha256-6S7q0JJs/Kx4kb/fv0oMjS855QTz5Rc2hh9AkIUjUsk="
       crossorigin="anonymous"
     ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    ></script>
+
     <script>
+      window.cart = (function() {
+        let content = window.localStorage.getItem('cart')
+          ? JSON.parse(window.localStorage.getItem('cart'))
+          : {};
+        let changeCallbacks = [];
+
+        const notifyChange = () => {
+          changeCallbacks.forEach(cb => cb(content));
+        };
+
+        return {
+          add: (sku, qty, product = {}) => {
+            if (!content[sku]) {
+              content[sku] = { qty: 0 }
+            }
+            content[sku] = {
+              qty: content[sku].qty + qty,
+              product: product
+            }
+            notifyChange();
+          },
+          remove: sku => {
+            delete content[sku];
+            notifyChange();
+          },
+          reset: () => {
+            content = {};
+            notifyChange();
+          },
+          content: () => content,
+          onChange: (cb) => {
+            changeCallbacks.push(cb);
+            cb(content);
+          }
+        }
+      })();
+
+      window.cart.onChange(updateCart);
+
+      function updateCart(content) {
+        if (window.localStorage) {
+          window.localStorage.setItem(
+            'cart',
+            JSON.stringify(content)
+          );
+        }
+
+        const cart = document.getElementById('cart');
+        const total = Object.values(content)
+          .map(
+            item => item.qty * item.product.price
+          )
+          .reduce(
+            (total, itemPrice) => total + itemPrice, 0
+          )
+          .toFixed(2);
+
+        cart.innerHTML = `
+          <div class="fixed bottom-0 right-0 bg-gray-300 shadow-md px-6 py-2 w-full">
+            <ul class="flex flex-wrap">
+              <li class="py-1 mr-4 flex flex-col justify-center items-center text-gray-500 hover:text-red-700">
+                <button
+                  class="flex-auto"
+                  onClick="window.cart.reset()"
+                >
+                  ${feather.icons['trash'].toSvg()}
+                </button>
+                <span class="text-sm text-center">
+                  Vider
+                </span>
+              </li>
+            ${Object.keys(content).map(key => `
+              <li class="py-1 flex flex-col justify-center">
+                <img
+                  class="rounded-full mx-1 mb-1 h-12 w-12 flex items-center justify-center shadow-md"
+                  src="${decodeURI(content[key].product.image)}"
+                  title="${decodeURI(content[key].product.name)}"
+                  alt=""
+                />
+                <span class="text-sm text-center">
+                  ${content[key].qty}
+                  <button
+                    class="text-gray-500 hover:text-red-700"
+                    onClick="window.cart.remove('${key}')"
+                  >
+                    ${feather.icons['trash-2'].toSvg({
+                      class: 'inline w-4'
+                    })}
+                  </button>
+                </span>
+              </li>
+            `).join('')}
+            </ul>
+
+            <div class="flex flex-col flex-wrap py-2">
+              <a
+                class="m-auto w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 text-center"
+                title="Vérifier ma commande"
+                href="validation.html"
+              >
+                Je vérifie ma commande de ~${total}€
+                ${feather.icons['check-circle'].toSvg({
+                  class: 'inline'
+                })}
+              </a>
+              <p class="text-xs text-gray-700 text-center">
+                Le prix final exact vous sera confirmé lors de la préparation.
+              </p>
+            </div>
+          </div>
+        `;
+      }
+
       const searchClient = algoliasearch(
         "M6AKDBX36Z",
         "200ad253b958794d0ff8a2a187d74560"
@@ -193,8 +332,16 @@
                     <p class="text-4xl">${hit.price}€</p>
                     <div class="flex mt-2 items-center">
                       <p>Stock</p>
-                      <p class="ml-2 px-2 py-1 font-bold bg-gray-700 text-white" title="Quantité en stock">${hit.qtyInStock}</p>
+                      <p class="ml-2 px-2 py-1 font-bold bg-gray-600 text-white" title="Quantité en stock">${hit.qtyInStock}</p>
                     </div>
+                    <button
+                      class="bg-gray-800 hover:bg-gray-700 px-4 py-2 mt-2 font-bold text-white w-full flex justify-center"
+                      onClick="window.cart.add('${hit.objectID}', 1, { name: '${encodeURI(hit.name).replace("'", "")}', price: ${hit.price}, image: '${encodeURI(image)}' })"
+                      title="Ajouter à ma liste de courses"
+                    >
+                      ${feather.icons['shopping-bag'].toSvg()}
+                      <span class="ml-2">Ajouter</span>
+                    </button>
                   </div>
                 </article>
               `;

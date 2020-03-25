@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Préparation de commande Drive — La Chouette Coop</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128+Text&display=swap" rel="stylesheet">
+
+    <style>
+      .barcode {
+        font-family: 'Libre Barcode 128 Text', cursive;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container mx-auto max-w-screen-md">
+      <img
+        class="float-right w-20 -mt-3"
+        alt="Logo de La Chouette Coop"
+        src="logo.jpg"
+      />
+      <h1 class="mt-3 mb-5 text-2xl">
+        <strong class="font-bold text-4xl">Le Drive</strong> de La Chouette Coop
+      </h1>
+
+      <div class="border-2 my-3 py-3 px-4 clear-both">
+        <p class="font-bold">
+          Nom :
+        </p>
+        <p class="font-bold">
+          N° de téléphone :
+        </p>
+        <p class="my-2">
+          Notes :
+        </p>
+      </div>
+
+      <h2 class="text-xl pt-2 mb-4">Préparation de commande</h2>
+      <div id="cart" class="mt-2">
+        <p class="mb-4">
+          Si vous avez reçu un code commande par email, saisissez-le ici pour
+          accéder à la fiche de préparation de la commande.
+        </p>
+        <form
+          class="flex justify-between items-center"
+          action="#"
+          onsubmit="window.location.href = window.location.pathname + document.getElementById('commande').value"
+        >
+          <label for="code_commande">Code commande :</label>
+          <input class="border border-gray-700 p-2 mx-2 w-1/2" id="commande" value="" type="text" />
+          <button class="bg-black text-white p-2" type="submit">Préparer la commande</button>
+      </div>
+    </div>
+
+    <script
+      src="https://unpkg.com/core-js-bundle@3.6.4/minified.js"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/algoliasearch@4.0.0/dist/algoliasearch-lite.umd.js"
+      integrity="sha256-MfeKq2Aw9VAkaE9Caes2NOxQf6vUa8Av0JqcUXUGkd0="
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      const searchClient = algoliasearch(
+        "M6AKDBX36Z",
+        "200ad253b958794d0ff8a2a187d74560"
+      );
+      const index = searchClient.initIndex("produits");
+
+      const cartContent = window.location.search
+        .replace('?', '')
+        .split('&')
+        .reduce((acc, param) => {
+          const [id, qty] = param.split('=');
+          acc[id] = qty;
+          return acc;
+        }, {});
+
+      const ids = Object.keys(cartContent).filter(Boolean);
+      if (ids.length > 0) {
+        index
+          .search('', {
+            hitsPerPage: ids.length,
+            filters: ids
+              .map(id => `__export__.product_template_${id}`)
+              .map(id => `objectID:${id}`).join(' OR ')
+          })
+          .then(({ hits }) => hits.map(product => {
+            const id = product.objectID.replace('__export__.product_template_', '');
+
+            return {
+              id: id,
+              qty: cartContent[id],
+              product: product,
+            };
+          }))
+          .then(displayCart);
+      }
+
+      function displayCart (content) {
+        console.log(content);
+        const total = content
+          .map(
+            item => item.qty * item.product.price
+          )
+          .reduce(
+            (total, itemPrice) => total + itemPrice, 0
+          )
+          .toFixed(2);
+
+        cart.innerHTML = `
+          <div class="border px-6 py-4 w-full">
+            <ul class="flex flex-col flex-wrap">
+            ${content.map(item => `
+              <li class="flex justify-left items-center">
+                <p class="barcode text-3xl w-1/5 text-center">${item.product.barCode}</p>
+                <p class="mx-6 font-bold">
+                  ${item.qty} × ${item.product.price.toFixed(2)}€
+                </p>
+                <p class="text-l">${item.product.name}</p>
+              </li>
+            `).join('')}
+            </ul>
+
+            <p class="mt-2 pt-2 text-right border-t text-xs">
+              Total annoncé au Chouettos <strong class="text-xl pl-2">${total}€</strong>
+            </p>
+          </div>
+        `;
+      }
+    </script>
+  </body>
+</html>
