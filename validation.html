@@ -65,6 +65,17 @@
         return `${id}=${content[key].qty}`
       }).join('&');
 
+      const mailtoLink = [
+        `mailto:drive@lachouettecoop.fr?`,
+        `subject=${encodeURIComponent('Commande de ' + total + '€')}`,
+        `&body=${encodeURIComponent([
+          'Bonjour,',
+          '',
+          'Commande disponible sur https://drive.lachouettecoop.fr/preparation.html?' + cartUrl,
+          'Mon numéro de téléphone est le : ',
+        ].join('\n'))}`,
+      ].join('');
+
       cart.innerHTML = `
         <div class="bg-gray-300 shadow-md px-6 py-4 w-full">
           <ul class="flex flex-col flex-wrap">
@@ -103,7 +114,8 @@
             <a
               class="m-auto w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 text-center"
               title="Envoyer ma commande"
-              href="validation.html"
+              href="${mailtoLink}"
+              target="_blank"
             >
               Je transmet ma commande de ~${total}€ par email
               ${feather.icons['send'].toSvg({
@@ -111,7 +123,7 @@
               })}
             </a>
             <p class="text-xs text-gray-700 text-center">
-              En cas de problème, veuillez transmettre l'information suivante : <code class="select-all truncate font-mono px-1 bg-gray-100">${cartUrl}</code>
+              En cas de problème, veuillez transmettre l'information suivante par email à <a href="mailto:drive@lachouettecoop.fr" class="underline">drive@lachouettecoop.fr</a> : <code class="select-all truncate font-mono px-1 bg-gray-100">${cartUrl}</code>
             </p>
           </div>
         </div>
