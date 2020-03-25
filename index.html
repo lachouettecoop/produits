@@ -44,11 +44,16 @@
 
   <body>
     <div class="container mx-auto">
+      <img
+        class="float-right w-20 -mt-3"
+        alt="Logo de La Chouette Coop"
+        src="logo.jpg"
+      />
       <h1 class="mt-5 mb-7 text-2xl">
         <strong class="font-bold text-4xl">Le Drive</strong> de La Chouette Coop
       </h1>
 
-      <div class="bg-red-200 my-5 py-3 px-4">
+      <div class="bg-red-200 my-5 py-3 px-4 clear-both">
         <p class="font-bold mb-2">
           <strong>Cette plateforme de commande est encore imparfaite</strong>, aidez-nous
           <a href="mailto:contact@pierre-martin.fr?subject=Bug rencontré sur le Drive LCC" class="underline hover:no-underline">en remontant les bugs rencontrés.</a>
@@ -60,7 +65,7 @@
         </p>
       </div>
 
-      <div class="flex mb-4">
+      <div class="flex mb-64">
         <div class="w-1/4 p-2 pt-0">
           <h2 class="mb-5 text-2xl">
             Filtres
@@ -175,7 +180,7 @@
           .reduce(
             (total, itemPrice) => total + itemPrice, 0
           )
-          .toPrecision(2);
+          .toFixed(2);
 
         cart.innerHTML = `
           <div class="fixed bottom-0 right-0 bg-gray-300 shadow-md px-6 py-2 w-full">
