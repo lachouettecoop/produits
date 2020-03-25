@@ -182,6 +182,11 @@
           )
           .toFixed(2);
 
+        if (Object.values(content).length === 0) {
+          cart.innerHTML = '';
+          return;
+        }
+
         cart.innerHTML = `
           <div class="fixed bottom-0 right-0 bg-gray-300 shadow-md px-6 py-2 w-full">
             <ul class="flex flex-wrap">
