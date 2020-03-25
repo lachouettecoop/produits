@@ -121,10 +121,15 @@
 
     <script>
       window.cart = (function() {
-        const content = window.localStorage.getItem('cart')
+        let content = window.localStorage.getItem('cart')
           ? JSON.parse(window.localStorage.getItem('cart'))
           : {};
-        const changeCallbacks = [];
+        let changeCallbacks = [];
+
+        const notifyChange = () => {
+          changeCallbacks.forEach(cb => cb(content));
+        };
+
         return {
           add: (sku, qty, product = {}) => {
             if (!content[sku]) {
@@ -134,12 +139,15 @@
               qty: content[sku].qty + qty,
               product: product
             }
-
-            changeCallbacks.forEach(cb => cb(content));
+            notifyChange();
           },
           remove: sku => {
             delete content[sku];
-            changeCallbacks.forEach(cb => cb(content));
+            notifyChange();
+          },
+          reset: () => {
+            content = {};
+            notifyChange();
           },
           content: () => content,
           onChange: (cb) => {
@@ -172,6 +180,17 @@
         cart.innerHTML = `
           <div class="fixed bottom-0 right-0 bg-gray-300 shadow-md px-6 py-2 w-full">
             <ul class="flex flex-wrap">
+              <li class="py-1 mr-4 flex flex-col justify-center items-center text-gray-500 hover:text-red-700">
+                <button
+                  class="flex-auto"
+                  onClick="window.cart.reset()"
+                >
+                  ${feather.icons['trash'].toSvg()}
+                </button>
+                <span class="text-sm text-center">
+                  Vider
+                </span>
+              </li>
             ${Object.keys(content).map(key => `
               <li class="py-1 flex flex-col justify-center">
                 <img
@@ -197,7 +216,7 @@
 
             <div class="flex flex-col flex-wrap py-2">
               <a
-                class="m-auto w-full bg-green-700 text-white font-bold py-2 mr-2 text-center"
+                class="m-auto w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 text-center"
                 title="Vérifier ma commande"
                 href="validation.html"
               >
