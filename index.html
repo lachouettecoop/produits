@@ -66,10 +66,6 @@
         </p>
       </div>
 
-      <p class="bg-orange-200 my-5 py-3 px-4 clear-both">
-        Il n'est pas encore possible de choisir une quantité plus précise pour le Vrac et les Fruits &amp; Légumes. Nous allons y remédier prochainement, mais en attendant <strong>vous pouvez donner les quantités souhaitées dans l'email de commande</strong>. Les préparations en tiendront compte et nous vous appelerons si besoin.
-      </p>
-
       <div class="flex mb-64">
         <div class="w-1/4 p-2 pt-0">
           <h2 class="mb-5 text-2xl">
@@ -145,8 +141,9 @@
             if (!content[sku]) {
               content[sku] = { qty: 0 }
             }
+            const newQty = content[sku].qty + qty;
             content[sku] = {
-              qty: content[sku].qty + qty,
+              qty: Number.isInteger(newQty) ? newQty : Number(newQty.toFixed(2)),
               product: product
             }
             notifyChange();
@@ -168,6 +165,14 @@
       })();
 
       window.cart.onChange(updateCart);
+
+      function askQty(isVrac) {
+        if (!isVrac) {
+          return 1;
+        }
+        const qty = window.prompt("Quelle quantité souhaitez-vous (Kg) ?", "1.00");
+        return Number(qty.replace(",", ".").trim())
+      }
 
       function updateCart(content) {
         if (window.localStorage) {
@@ -320,7 +325,7 @@
               const addToCart = hit.qtyInStock > 0
                 ? `<button
                   class="bg-gray-800 hover:bg-gray-700 px-4 py-2 mt-2 font-bold text-white w-full flex justify-center"
-                  onClick="window.cart.add('${hit.objectID}', 1, { name: '${encodeURI(hit.name).replace("'", "")}', price: ${hit.price}, image: '${encodeURI(image)}' })"
+                  onClick="window.cart.add('${hit.objectID}', askQty(${hit.isVrac}), { name: '${encodeURI(hit.name).replace("'", "")}', price: ${hit.price}, image: '${encodeURI(image)}' })"
                   title="Ajouter à ma liste de courses"
                 >
                   ${feather.icons['shopping-bag'].toSvg()}
