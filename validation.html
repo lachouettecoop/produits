@@ -10,6 +10,8 @@
       href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
       rel="stylesheet"
     />
+
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
   </head>
 
   <body>
@@ -37,7 +39,117 @@
 
       <h2 class="text-2xl pt-4 mb-4">Vérifiez votre commande avant de l'envoyer</h2>
       <a href="/" class="text-gray-700 hover:text-black">&larr; Modifier la commande</a>
-      <div id="cart" class="mt-2"></div>
+
+      <div x-data="getCart()">
+        <div class="bg-gray-300 shadow-md px-6 py-4 w-full">
+          <ul class="flex flex-col flex-wrap">
+            <template x-for="item in items">
+              <li class="py-1 mb-2 flex justify-left items-center">
+                <img
+                  class="rounded-full h-12 w-12 shadow-md"
+                  x-bind:src="decodeURI(item.product.image)"
+                  x-bind:title="decodeURI(item.product.name)"
+                  alt=""
+                />
+                <p>
+                  <span
+                    class="text-xs ml-4 mr-6"
+                    x-text="`${item.qty} × ${item.product.price.toFixed(2)}€`"
+                  ></span>
+                  <span
+                    class="text-l"
+                    x-text="decodeURI(item.product.name)"
+                  ></span>
+                </p>
+              </li>
+            </template>
+          </ul>
+
+          <form
+            action="#"
+            x-on:submit.prevent="state = 'sending'; send(formData);"
+          >
+            <fieldset class="mt-8 mb-4" x-bind:disabled="state === 'sending' ? 'disabled' : false">
+              <h2 class="text-xl mb-6">
+                Envoyer ma commande
+              </h2>
+
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm mb-2" for="nom">
+                  Prénom / Nom <span class="text-red-700">*</span>
+                </label>
+                <input
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="nom"
+                  x-model="formData.nom"
+                  type="text"
+                  placeholder="Jean Tibou"
+                  required
+                >
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm mb-2" for="email">
+                  Email <span class="text-red-700">*</span>
+                </label>
+                <input
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="email"
+                  x-model="formData.email"
+                  type="email"
+                  placeholder="jean.tibou@exemple.fr"
+                  required
+                >
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm mb-2" for="telephone">
+                  N° de téléphone <span class="text-red-700">*</span>
+                </label>
+                <input
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="telephone"
+                  x-model="formData.telephone"
+                  type="tel"
+                  placeholder="0602030405"
+                  required
+                >
+                <p class="text-gray-700 text-xs mt-1">
+                  Pour que la personne préparant votre commande puisse vous joindre si besoin, et vous informer lorsque la commande sera prête.
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm mb-2" for="notes">
+                  Notes additionnelles
+                </label>
+                <textarea
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="notes"
+                  x-model="formData.notes"
+                  rows="5"
+                ></textarea>
+              </div>
+            </fieldset>
+
+            <div class="flex flex-col flex-wrap py-2">
+              <p class="mb-2">
+                Le prix final exact vous sera confirmé une fois la préparation terminée.
+              </p>
+              <button
+                class="m-auto w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 text-center"
+                type="submit"
+                x-bind:disabled="state === 'sending' ? 'disabled' : false"
+                x-text="state === 'sending' ? 'Envoi en cours…' : `Je valide ma commande de ~${total}€`"
+              ></button>
+              <p class="text-sm text-gray-700 text-center mt-1">
+                En cas de problème, veuillez transmettre le code <code class="select-all truncate font-mono px-1 bg-gray-100" x-text="url"></code> par email à <a href="mailto:drive@lachouettecoop.fr" class="underline">drive@lachouettecoop.fr</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </div>
 
     <script
@@ -46,89 +158,74 @@
     <script
       src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
     ></script>
+    <script
+      src="//cdn.jsdelivr.net/npm/graphql.js@0.6.6/graphql.min.js"
+    ></script>
 
     <script>
-      const content = window.localStorage.getItem('cart')
-        ? JSON.parse(window.localStorage.getItem('cart'))
-        : {};
+      function getCart() {
+        const content = window.localStorage.getItem('cart')
+          ? JSON.parse(window.localStorage.getItem('cart'))
+          : {};
+        const url = Object.keys(content)
+          .map(key => {
+            const id = key.replace('__export__.product_template_', '');
+            return `${id}=${content[key].qty}`
+          })
+          .join('&')
 
-      const total = Object.values(content)
-        .map(
-          item => item.qty * item.product.price
-        )
-        .reduce(
-          (total, itemPrice) => total + itemPrice, 0
-        )
-        .toFixed(2);
+        return {
+          items: Object.values(content),
+          total: Object.values(content)
+            .map(
+              item => item.qty * item.product.price
+            )
+            .reduce(
+              (total, itemPrice) => total + itemPrice, 0
+            )
+            .toFixed(2),
+          url: url,
+          state: 'loaded',
+          formData: {
+            codeCommande: url
+          }
+        };
+      }
 
-      const cartUrl = Object.keys(content).map(key => {
-        const id = key.replace('__export__.product_template_', '');
-        return `${id}=${content[key].qty}`
-      }).join('&');
+      const graph = graphql("https://api.lachouettecoop.fr/", {
+        asJSON: true
+      });
+      function send(data, setState) {
+        const passerCommande = graph.mutate(`(@autodeclare) {
+          passerCommande(input:{
+            nom: $nom
+            email: $email
+            telephone: $telephone
+            codeCommande: $codeCommande
+            notes: $notes
+          }) {
+            success
+          }
+        }`);
 
-      const mailtoLink = [
-        `mailto:drive@lachouettecoop.fr?`,
-        `subject=${encodeURIComponent('Commande de ' + total + '€')}`,
-        `&body=${encodeURIComponent([
-          'Bonjour,',
-          '',
-          'Commande disponible sur https://drive.lachouettecoop.fr/preparation.html?' + cartUrl,
-          'Mon numéro de téléphone est le : ',
-        ].join('\n'))}`,
-      ].join('');
+        passerCommande(data)
+          .then((response) => {
+            if (response && response.passerCommande && response.passerCommande.success) {
+              window.alert("La commande a bien été envoyée, merci.\nNous vous contacterons lorsqu'elle sera prête.");
+              window.location.href = "/";
+            } else {
+              throw new Error(response);
+            }
+          })
+          .catch(function (error) {
+            window.alert(
+              "Une erreur est survenue lors de l'envoi de la commande. Si le problème continue, suivre les indications détaillées sous le bouton d'envoi.\n\n" +
+              JSON.stringify(error, null, 2)
+            );
+            window.location.reload();
+          })
+      }
 
-      cart.innerHTML = `
-        <div class="bg-gray-300 shadow-md px-6 py-4 w-full">
-          <ul class="flex flex-col flex-wrap">
-          ${Object.keys(content).map(key => `
-            <li class="py-1 mb-2 flex justify-left items-center">
-              <img
-                class="rounded-full h-12 w-12 shadow-md"
-                src="${decodeURI(content[key].product.image)}"
-                title="${decodeURI(content[key].product.name)}"
-                alt=""
-              />
-              <p>
-                <span class="text-xs ml-4 mr-6">
-                  ${content[key].qty} × ${content[key].product.price.toFixed(2)}€
-                </span>
-
-                <span class="text-l">${decodeURI(content[key].product.name)}</span>
-              </p>
-            </li>
-          `).join('')}
-          </ul>
-
-          <div class="my-8">
-            <p>
-              Vous allez maintenant devoir transmettre la commande par email.
-            </p>
-            <p>
-              Veuillez vous assurer de bien <strong class="text-bold">indiquer votre nom/prénom et numéro de téléphone dans l'email</strong> afin que la personne préparant votre commande puisse vous joindre si besoin, et vous informer lorsque la commande sera prête.
-            </p>
-            <p>
-              Le prix final exact vous sera confirmé une fois la préparation terminée.
-            </p>
-          </div>
-
-          <div class="flex flex-col flex-wrap py-2">
-            <a
-              class="m-auto w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 text-center"
-              title="Envoyer ma commande"
-              href="${mailtoLink}"
-              target="_blank"
-            >
-              Je transmet ma commande de ~${total}€ par email
-              ${feather.icons['send'].toSvg({
-                class: 'inline'
-              })}
-            </a>
-            <p class="text-xs text-gray-700 text-center">
-              En cas de problème, veuillez transmettre l'information suivante par email à <a href="mailto:drive@lachouettecoop.fr" class="underline">drive@lachouettecoop.fr</a> : <code class="select-all truncate font-mono px-1 bg-gray-100">${cartUrl}</code>
-            </p>
-          </div>
-        </div>
-      `;
     </script>
   </body>
 </html>
