@@ -64,6 +64,7 @@ const prepareForIndexing = async row => {
     saleState: saleStateValue,
     saleStateScore: saleStateScore,
     qtyInStock: Number(row["Quantité en stock"]),
+    isVrac: row["A peser avec une balance"] === "True",
     "categories.lvl1": categoryValue(1),
     "categories.lvl2": categoryValue(2),
     "categories.lvl3": categoryValue(3),
