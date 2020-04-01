@@ -21,8 +21,9 @@ const prepareForIndexing = async row => {
     .filter(cat => cat !== "");
 
   const categoryValue = level => {
-    if (categories.length < level) return "";
-    return categories.slice(0, level).join(" > ");
+    const offset = 2;
+    if (categories.length < level + offset) return "";
+    return categories.slice(offset, level + offset).join(" > ");
   };
 
   const saleStateValues = row => {
