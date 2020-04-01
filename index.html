@@ -138,6 +138,9 @@
 
         return {
           add: (sku, qty, product = {}) => {
+            if (!qty) {
+              return;
+            }
             if (!content[sku]) {
               content[sku] = { qty: 0 }
             }
@@ -171,7 +174,7 @@
           return 1;
         }
         const qty = window.prompt("Quelle quantité souhaitez-vous (Kg) ?", "1.00");
-        return Number(qty.replace(",", ".").trim())
+        return qty ? Number(qty.replace(",", ".").trim()) : 0;
       }
 
       function updateCart(content) {
