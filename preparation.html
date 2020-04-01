@@ -17,10 +17,12 @@
         font-family: 'Libre Barcode 128 Text', cursive;
       }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
   </head>
 
   <body>
-    <div class="container mx-auto max-w-screen-md">
+    <div class="container mx-auto max-w-screen-md" x-data="cartContent">
       <img
         class="float-right w-20 -mt-3"
         alt="Logo de La Chouette Coop"
@@ -32,10 +34,10 @@
 
       <div class="border-2 my-3 py-3 px-4 clear-both">
         <p class="font-bold">
-          Nom :
+          Nom : <span x-text="nom"></span>
         </p>
         <p class="font-bold">
-          N° de téléphone :
+          N° de téléphone : <span x-text="telephone"></span>
         </p>
         <p class="my-2">
           Notes :
@@ -83,11 +85,17 @@
         .split('&')
         .reduce((acc, param) => {
           const [id, qty] = param.split('=');
-          acc[id] = qty;
+          acc[id] = decodeURIComponent(qty);
           return acc;
         }, {});
 
-      const ids = Object.keys(cartContent).filter(Boolean);
+      const dataKeys = ["nom", "telephone"];
+      const isDataPayload = key => dataKeys.indexOf(key) === -1;
+
+      const ids = Object.keys(cartContent)
+        .filter(Boolean)
+        .filter(isDataPayload);
+
       if (ids.length > 0) {
         index
           .search('', {
@@ -109,7 +117,6 @@
       }
 
       function displayCart (content) {
-        console.log(content);
         const total = content
           .map(
             item => item.qty * item.product.price
