@@ -328,7 +328,7 @@
               const addToCart = hit.qtyInStock > 0
                 ? `<button
                   class="bg-gray-800 hover:bg-gray-700 px-4 py-2 mt-2 font-bold text-white w-full flex justify-center"
-                  onClick="window.cart.add('${hit.objectID}', askQty(${hit.isVrac}), { name: '${encodeURI(hit.name).replace("'", "")}', price: ${hit.price}, image: '${encodeURI(image)}' })"
+                  onClick="window.cart.add('${hit.objectID}', askQty(${hit.isVrac}), { name: '${encodeURI(hit.name).replace(/'/g, "")}', price: ${hit.price}, image: '${encodeURI(image)}' })"
                   title="Ajouter à ma liste de courses"
                 >
                   ${feather.icons['shopping-bag'].toSvg()}
