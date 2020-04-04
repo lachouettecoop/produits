@@ -18,18 +18,18 @@ const odooExport = fs.createReadStream(
   path.join(__dirname, "product.template.csv")
 );
 
-const prepareForIndexing = async row => {
+const prepareForIndexing = async (row) => {
   const categories = row["Catégorie interne/Nom affiché"]
     .split(" / ")
-    .filter(cat => cat !== "");
+    .filter((cat) => cat !== "");
 
-  const categoryValue = level => {
+  const categoryValue = (level) => {
     const offset = 2;
     if (categories.length < level + offset) return "";
     return categories.slice(offset, level + offset).join(" > ");
   };
 
-  const saleStateValues = row => {
+  const saleStateValues = (row) => {
     if (row["Actif"] === "False") {
       return [1000, "Archivé"];
     }
@@ -73,18 +73,19 @@ const prepareForIndexing = async row => {
     "categories.lvl3": categoryValue(3),
     "categories.lvl4": categoryValue(4),
     "categories.lvl5": categoryValue(5),
-    "categories.lvl6": categoryValue(6)
+    "categories.lvl6": categoryValue(6),
   };
 };
 
 csv(odooExport)
-  .then(rows => {
+  .then((rows) => {
     console.log(rows.length, "rows found. Converting.");
     return Promise.all(rows.map(prepareForIndexing));
   })
   .then(
-    records =>
+    (records) =>
       console.log("sending records to Algolia") ||
       index.saveObjects(records, { autoGenerateObjectIDIfNotExist: true })
   )
-  .then(v => console.log("Finished!"));
+  .then((v) => console.log("Finished!"))
+  .catch((e) => console.log("ERROR", e));
