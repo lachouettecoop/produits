@@ -3,13 +3,16 @@ const csv = require("neat-csv");
 const fs = require("fs");
 const path = require("path");
 
+// const ALGOLIA_APP_ID = "M6AKDBX36Z"; // v1
+const ALGOLIA_APP_ID = "ZSB27F96MU"; // v2
+
 if (!process.env.ALGOLIA_SECRET_KEY) {
   console.error("Veuillez exécuter le script avec la clé secrète Algolia");
   console.error("> ALGOLIA_SECRET_KEY=xxxxx npm run index");
   process.exit(2);
 }
 
-const client = algoliasearch("M6AKDBX36Z", process.env.ALGOLIA_SECRET_KEY);
+const client = algoliasearch(ALGOLIA_APP_ID, process.env.ALGOLIA_SECRET_KEY);
 const index = client.initIndex("produits");
 const odooExport = fs.createReadStream(
   path.join(__dirname, "product.template.csv")
