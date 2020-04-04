@@ -27,3 +27,9 @@ Ouvrez ensuite http://localhost:8080/
 2. placez le fichier `product.template.csv` téléchargé en 1. à la racine du projet
 3. exécutez `ALGOLIA_SECRET_KEY=xxxx npm run index` (où `ALGOLIA_SECRET_KEY` correspond à la clé secrète permettant d'ajouter des objets à l'index)
 4. commiter les fichiers image à jour et pousser sur Github
+
+### En cas de dépassement de quota Algolia
+
+Il faut recréer une nouvelle application avec un index `produits`, puis mettre à jour les variables `ALGOLIA_CONFIG` et `ALGOLIA_APP_ID` dans le code.
+
+Une fois l'application créé, il faut configurer l'indice tel que détaillé dans les captures d'écran de [cette documentation](./docs).
