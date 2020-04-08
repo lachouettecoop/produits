@@ -17,7 +17,7 @@ function displayClosedOverlay() {
       <img src="logo.jpg" alt="Logo de La Chouette Coop" class="h-40" />
 
       <p class="text-4xl font-bold mt-6 mb-4">
-        Le Lab est fermé pour aujourd'hui.
+        Les commandes sont fermées actuellement.
       </p>
 
       <p class="text-xl">
