@@ -2,6 +2,7 @@ const algoliasearch = require("algoliasearch");
 const csv = require("neat-csv");
 const fs = require("fs");
 const path = require("path");
+const replace = require("replace-in-file");
 
 // const ALGOLIA_APP_ID = "M6AKDBX36Z"; // v1
 const ALGOLIA_APP_ID = "ZSB27F96MU"; // v2
@@ -77,6 +78,31 @@ const prepareForIndexing = async (row) => {
   };
 };
 
+const nextClosingDate = () => {
+  const CLOSING_HOUR = {
+    WEEKDAY: 16,
+    SATURDAY: 14,
+  };
+
+  const currDay = new Date().getDay();
+  if ([0, 1, 2].includes(currDay)) {
+    return Date.now() - 1;
+  }
+
+  const closingDate = new Date();
+  if (currDay === 5 && new Date().getHours() > 19) {
+    // saturday's stock could be updated on friday evening too
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+    closingDate.setHours(CLOSING_HOUR.SATURDAY, 0, 0);
+    return closingDate.getTime() + ONE_DAY;
+  }
+
+  const closingHour =
+    currDay === 6 ? CLOSING_HOUR.SATURDAY : CLOSING_HOUR.WEEKDAY;
+  closingDate.setHours(closingHour, 0, 0);
+  return closingDate.getTime();
+};
+
 csv(odooExport)
   .then((rows) => {
     console.log(rows.length, "rows found. Converting.");
@@ -87,5 +113,12 @@ csv(odooExport)
       console.log("sending records to Algolia") ||
       index.saveObjects(records, { autoGenerateObjectIDIfNotExist: true })
   )
-  .then((v) => console.log("Finished!"))
+  .then(() => {
+    console.log("Algolia indexation Finished!");
+    return replace({
+      files: "./js/fermeture.js",
+      from: /const CLOSED_TIMESTAMP =.*/g,
+      to: `const CLOSED_TIMESTAMP = ${nextClosingDate()};`,
+    });
+  })
   .catch((e) => console.log("ERROR", e));
