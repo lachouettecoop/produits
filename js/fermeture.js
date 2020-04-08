@@ -32,6 +32,14 @@ function displayClosedOverlay() {
         Cette limitation permet de s'assurer que les commandes sont passées avec un état des stocks précis <strong>au moment de l'ouverture des commandes</strong>.<br>
         Rappel : Le stock affiché n'est pas un stock en temps réel.
       </p>
+
+      <audio controls class="mt-4" id="chouette">
+        <source src="chouette.mp3" type="audio/mpeg">
+        <p>Votre navigateur ne supporte pas la lecture de fichiers audio, mais vous pouvez profiter d'un super bruit de Chouette pour patienter en
+          <a href="chouette.mp3">téléchargeant le fichier son</a>.</p>
+      </audio>
     </div>
   `;
+
+  document.getElementById("chouette").play();
 }
