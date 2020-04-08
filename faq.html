@@ -21,9 +21,17 @@
 
 
     <style>
-      /**
-        TODO
-      */
+      h1 {
+        font-size: 2.25rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      ul {
+        list-style: circle;
+        list-style-position: inside;
+        padding-left: 1rem;
+      }
     </style>
   </head>
 
@@ -36,6 +44,7 @@
       />
 
       <div
+        class="my-4"
         x-data="{ html: ''}"
         x-init="fetchPadContent().then(content => html = content)"
       >
