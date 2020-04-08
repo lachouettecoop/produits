@@ -125,9 +125,19 @@
               id: id,
               qty: cartContent[id],
               product: product,
+              category: getDeepestCategoryPath(product)
             };
-          }))
+          }).sort((a, b) => a.category.localeCompare(b.category)))
           .then(displayCart);
+      }
+
+      function getDeepestCategoryPath (product) {
+        return product["categories.lvl6"]
+          || product["categories.lvl5"]
+          || product["categories.lvl4"]
+          || product["categories.lvl3"]
+          || product["categories.lvl2"]
+          || product["categories.lvl1"]
       }
 
       function displayCart (content) {
@@ -149,7 +159,12 @@
                 <p class="mx-6 font-bold">
                   ${item.qty} × ${item.product.price.toFixed(2)}€
                 </p>
-                <p class="text-l">${item.product.name}</p>
+                <p class="text-l leading-none">
+                  ${item.product.name}
+                  <br /><span class="text-xs text-gray-600">
+                    ${item.category.replace('ALIMENTAIRE > ', '')}
+                  </span>
+                </p>
               </li>
             `).join('')}
             </ul>
