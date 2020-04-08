@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>FAQ — La Chouette Coop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.3.1/themes/algolia-min.css"
+      integrity="sha256-HB49n/BZjuqiCtQQf49OdZn63XuKFaxcIHWf0HNKte8="
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine-ie11.min.js" defer></script>
+
+
+    <style>
+      /**
+        TODO
+      */
+    </style>
+  </head>
+
+  <body>
+    <div class="container mx-auto">
+      <img
+        class="float-right w-20 -mt-3"
+        alt="Logo de La Chouette Coop"
+        src="logo.jpg"
+      />
+
+      <div
+        x-data="{ html: ''}"
+        x-init="fetchPadContent().then(content => html = content)"
+      >
+        <div x-html="html"></div>
+      </div>
+    </div>
+
+    <script
+      src="https://unpkg.com/core-js-bundle@3.6.4/minified.js"
+    ></script>
+
+    <script>
+      const PAD_URL = "https://pad.colibris-outilslibres.org/p/9g0d-lcc-faq-drive/export/html";
+
+      const fetchPadContent = () => {
+        return fetch(PAD_URL)
+          .then(r => r.text())
+          .then(html => {
+            var el = document.createElement('html');
+            el.innerHTML = html;
+            return el.querySelector('body').innerHTML
+          });
+      }
+    </script>
+  </body>
+</html>
