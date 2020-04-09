@@ -6,6 +6,7 @@ const replace = require("replace-in-file");
 
 // const ALGOLIA_APP_ID = "M6AKDBX36Z"; // v1
 const ALGOLIA_APP_ID = "ZSB27F96MU"; // v2
+const IS_TEST_MODE = process.env.LCC_DRY_RUN || false;
 
 if (!process.env.ALGOLIA_SECRET_KEY) {
   console.error("Veuillez exécuter le script avec la clé secrète Algolia");
@@ -103,7 +104,22 @@ const nextClosingDate = () => {
   return closingDate.getTime();
 };
 
-csv(odooExport)
+const fakeAlgoliaIndex = {
+  clearObjects: () => Promise.resolve(),
+  saveObjects: (records) => {
+    console.log(`Faking saving ${records.length} records in Algolia`);
+    return Promise.resolve();
+  },
+};
+
+const algoliaIndexFacade = IS_TEST_MODE ? fakeAlgoliaIndex : index;
+if (IS_TEST_MODE) {
+  console.log("TEST MODE enabled, no data will be hurt!");
+}
+
+algoliaIndexFacade
+  .clearObjects()
+  .then(() => csv(odooExport))
   .then((rows) => {
     console.log(rows.length, "rows found. Converting.");
     return Promise.all(rows.map(prepareForIndexing));
@@ -111,7 +127,9 @@ csv(odooExport)
   .then(
     (records) =>
       console.log("sending records to Algolia") ||
-      index.saveObjects(records, { autoGenerateObjectIDIfNotExist: true })
+      algoliaIndexFacade.saveObjects(records, {
+        autoGenerateObjectIDIfNotExist: true,
+      })
   )
   .then(() => {
     console.log("Algolia indexation Finished!");

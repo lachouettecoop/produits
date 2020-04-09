@@ -23,6 +23,11 @@ Ouvrez ensuite http://localhost:8080/
 
 ### Réindexer les données sur Algolia
 
+> Pour tester cela sans risque de casser les données de production sur Algolia,
+> ajouter la variable d'environnement `LCC_DRY_RUN=true` à l'étape 3.
+>
+> Exemple : `ALGOLIA_SECRET_KEY=xxxx LCC_DRY_RUN=true npm run index`
+
 1. téléchargez un fichier d'export à jour depuis Odoo (Champs « Drive »)
 2. placez le fichier `product.template.csv` téléchargé en 1. à la racine du projet
 3. exécutez `ALGOLIA_SECRET_KEY=xxxx npm run index` (où `ALGOLIA_SECRET_KEY` correspond à la clé secrète permettant d'ajouter des objets à l'index)
