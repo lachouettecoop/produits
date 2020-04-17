@@ -1,4 +1,4 @@
-const CLOSED_TIMESTAMP = 1587132000508;
+const CLOSED_TIMESTAMP = Date.now() - 1;
 
 function checkClosed() {
   if (Date.now() > CLOSED_TIMESTAMP) {
@@ -18,6 +18,7 @@ function displayClosedOverlay() {
 
       <p class="text-4xl font-bold mt-6 mb-4">
         Les commandes sont fermées actuellement.
+<br>Trop de commandes aujourd'hui.
       </p>
 
       <p class="text-xl">
