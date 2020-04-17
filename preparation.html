@@ -16,6 +16,13 @@
       .barcode {
         font-family: 'Libre Barcode 128 Text', cursive;
       }
+      .breakable {
+        break-inside: auto;
+        /* Pour Firefox : */
+        page-break-inside: auto;
+        /* Pour WebKit : */
+        -webkit-column-break-inside: auto;
+      }
     </style>
 
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine-ie11.min.js" defer></script>
@@ -50,7 +57,7 @@
       </div>
 
       <h2 class="text-xl pt-2 mb-4">Préparation de commande</h2>
-      <div id="cart" class="mt-2">
+      <div id="cart" class="mt-2 breakable">
         <p class="mb-4">
           Si vous avez reçu un code commande par email, saisissez-le ici pour
           accéder à la fiche de préparation de la commande.
@@ -151,8 +158,8 @@
           .toFixed(2);
 
         cart.innerHTML = `
-          <div class="border px-6 py-4 w-full">
-            <ul class="flex flex-col flex-wrap">
+          <div class="border px-6 py-4 w-full breakable">
+            <ul class="flex flex-col flex-wrap breakable">
             ${content.map(item => `
               <li class="flex justify-left items-center">
                 <p class="barcode text-3xl w-1/5 text-center">${item.product.barCode}</p>
