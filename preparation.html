@@ -65,7 +65,7 @@
         <form
           class="flex justify-between items-center"
           action="#"
-          onsubmit="window.location.href = window.location.pathname + document.getElementById('commande').value"
+          onsubmit="window.location.href = window.location.pathname + '?' + document.getElementById('commande').value"
         >
           <label for="code_commande">Code commande :</label>
           <input class="border border-gray-700 p-2 mx-2 w-1/2" id="commande" value="" type="text" />
