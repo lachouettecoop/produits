@@ -1,4 +1,4 @@
-const CLOSED_TIMESTAMP = 1588773600367;
+const CLOSED_TIMESTAMP = 1588860000931;
 
 function checkClosed() {
   if (Date.now() > CLOSED_TIMESTAMP) {
@@ -10,6 +10,7 @@ function checkClosed() {
 checkClosed();
 
 function displayClosedOverlay() {
+  return;
   window.localStorage && window.localStorage.clear();
 
   document.body.innerHTML = `
