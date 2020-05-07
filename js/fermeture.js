@@ -10,7 +10,6 @@ function checkClosed() {
 checkClosed();
 
 function displayClosedOverlay() {
-  return;
   window.localStorage && window.localStorage.clear();
 
   document.body.innerHTML = `
