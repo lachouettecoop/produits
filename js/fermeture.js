@@ -24,7 +24,7 @@ function displayClosedOverlay() {
         Les commandes via ce site sont possibles :
         <ul class="text-xl">
           <li>de <strong>~13h à 16h</strong> les mercredi, jeudi et vendredi</li>
-          <li>de <strong>~10h à 14h</strong> le samedi</li>
+          <li>de <strong>~9h à 14h</strong> le samedi</li>
         </ul>
       </p>
 
