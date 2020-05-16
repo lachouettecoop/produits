@@ -82,7 +82,7 @@ const prepareForIndexing = async (row) => {
 const nextClosingDate = () => {
   const CLOSING_HOUR = {
     WEEKDAY: 16,
-    SATURDAY: 14,
+    SATURDAY: 13,
   };
 
   const currDay = new Date().getDay();
