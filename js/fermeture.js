@@ -10,6 +10,9 @@ function checkClosed() {
 checkClosed();
 
 function displayClosedOverlay() {
+  if (window.location.search === "?DEBUG") {
+    return;
+  }
   window.localStorage && window.localStorage.clear();
 
   document.body.innerHTML = `
