@@ -1,1 +1,455 @@
-<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="next-head-count" content="2"/><link rel="preload" href="/_next/static/RRvZMmCTj0GWOsEu_EzPV/pages/_app.js" as="script"/><link rel="preload" href="/_next/static/RRvZMmCTj0GWOsEu_EzPV/pages/index.js" as="script"/><link rel="preload" href="/_next/static/runtime/webpack-c212667a5f965e81e004.js" as="script"/><link rel="preload" href="/_next/static/chunks/framework.c6faae2799416a6da8e8.js" as="script"/><link rel="preload" href="/_next/static/chunks/60f401f8d9cc9a962febb9c85c12888b2e77678c.c964d93927c0dd8d7b97.js" as="script"/><link rel="preload" href="/_next/static/runtime/main-d08daee3d31678f92bfd.js" as="script"/></head><body><div id="__next"></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{}},"page":"/","query":{},"buildId":"RRvZMmCTj0GWOsEu_EzPV","nextExport":true,"autoExport":true,"isFallback":false}</script><script nomodule="" src="/_next/static/runtime/polyfills-f1a72475392243fcf9b5.js"></script><script async="" data-next-page="/_app" src="/_next/static/RRvZMmCTj0GWOsEu_EzPV/pages/_app.js"></script><script async="" data-next-page="/" src="/_next/static/RRvZMmCTj0GWOsEu_EzPV/pages/index.js"></script><script src="/_next/static/runtime/webpack-c212667a5f965e81e004.js" async=""></script><script src="/_next/static/chunks/framework.c6faae2799416a6da8e8.js" async=""></script><script src="/_next/static/chunks/60f401f8d9cc9a962febb9c85c12888b2e77678c.c964d93927c0dd8d7b97.js" async=""></script><script src="/_next/static/runtime/main-d08daee3d31678f92bfd.js" async=""></script><script src="/_next/static/RRvZMmCTj0GWOsEu_EzPV/_buildManifest.js" async=""></script><script src="/_next/static/RRvZMmCTj0GWOsEu_EzPV/_ssgManifest.js" async=""></script></body></html>
+<!DOCTYPE html>
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Drive — La Chouette Coop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.3.1/themes/algolia-min.css"
+      integrity="sha256-HB49n/BZjuqiCtQQf49OdZn63XuKFaxcIHWf0HNKte8="
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .state {
+        border-left: 5px solid;
+        padding-left: 1rem;
+      }
+      /**
+        - 0: "Vente au Lab"
+        - 200: "Vente au Supermarché"
+        - 500: "Déréférencé"
+        - 700: "Requalification en cours"
+        - 1000: "Archivé"
+      */
+      .state--0 {
+        border-color: green;
+      }
+      .state--200 {
+        border-color: orange;
+        opacity: 0.7;
+      }
+      .state--500, .state--700, .state--1000 {
+        opacity: 0.3;
+        border-color: gray;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container mx-auto">
+      <img
+        class="float-right w-20 -mt-3"
+        alt="Logo de La Chouette Coop"
+        src="logo.jpg"
+      />
+      <h1 class="mt-5 mb-7 text-2xl">
+        <strong class="font-bold text-4xl">Le Drive</strong> de La Chouette Coop
+      </h1>
+
+      <div class="text-xl bg-red-700 leading-tight text-white my-5 py-3 px-4 clear-both">
+        <strong>ATTENTION :</strong> tu précommandes tes achats sur ce site et tu viens retirer ta commande au Lab <strong class="text-3xl">LE MÊME JOUR</strong> (donc tu ne commandes pas à l'avance !). Merci pour ta compréhension.
+      </div>
+
+      <div class="bg-gray-200 my-5 py-3 px-4 clear-both">
+        <p class="mb-2">
+          Cette plateforme de commande est encore imparfaite, aidez-nous
+          <a href="mailto:contact@pierre-martin.fr?subject=Bug rencontré sur le Drive LCC" class="underline hover:no-underline">en remontant les bugs rencontrés.</a>
+        </p>
+        <p class="text-sm text-gray-700">
+          Si vous rencontrez un problème bloquant, vous pouvez passer commande
+          par téléphone ou SMS au n°suivant :
+          <a href="tel:0780973045" class="text-blue-700 hover:text-blue-800">07 80 97 30 45</a> (procédure exceptionnelle de commande).
+        </p>
+      </div>
+
+      <div class="flex mb-64">
+        <div class="w-1/4 p-2 pt-0">
+          <h2 class="mb-5 text-2xl">
+            Filtres
+          </h2>
+
+          <h3 class="mt-6 mb-2 text-xl">Prix</h3>
+          <div id="price" class="ml-2 mr-6"></div>
+
+          <h3 class="mt-6 mb-2 text-xl">Catégorie</h3>
+          <div id="categories"></div>
+
+          <h3 class="mt-6 mb-2 text-xl">Labels</h3>
+          <div id="labels"></div>
+
+          <h3 class="mt-6 mb-2 text-xl">Fournisseurs</h3>
+          <div id="suppliers"></div>
+
+          <h3 class="mt-6 mb-2 text-xl">Statut</h3>
+          <div id="states"></div>
+
+          <div id="powered-by" class="mt-8"></div>
+        </div>
+
+        <div class="w-3/4 p-2 pt-0">
+          <div class="mb-5">
+            <div id="searchbox"></div>
+            <div id="current-refinements" class="my-2"></div>
+            <div id="stats"></div>
+          </div>
+
+          <div id="covid" class="hidden py-4 px-6 bg-gray-200">
+            <h1 class="mb-7 text-xl">
+              <strong class="font-bold text-2xl">RE-ACTION* :</strong> collecte de produits d'hygiène pour les sans-abris
+            </h1>
+
+            <p class="my-2">
+              <strong>Chouettos, participe à la constitution de kits d'hygiène pour les sans-abris !</strong><br>
+              Pour cela, précommande sur ce site un ou plusieurs produit(s) suivant(s) :
+            </p>
+            <ul class="list-inside list-disc">
+              <li>Brosse à dent (sous conditionnement)</li>
+              <li>Dentifrice</li>
+              <li>Gel savon / douche (pas de savon solide !)</li>
+              <li>Mouchoirs</li>
+              <li>Papier toilette</li>
+              <li>Tampons et/ou serviettes hygiéniques</li>
+            </ul>
+
+            <p class="my-4">
+              Puis une fois au Lab pour le retrait de ta commande, vérifie-la avec le·la GH et <strong>dépose ton don dans le carton prévu à cet effet au Lab (demande au GH ;-))</strong>.<br>
+              Astuce : les produits correspondant à la collecte sont signalés par les mots (hashtag) « <strong>#CovidSolidarite</strong> » sur ta commande.
+            </p>
+
+
+            <p class="italic text-xs">
+              * La Chouette Coop participe à RE-ACTION, une opération des associations Makesense, La Chorba et La Cloche.
+            <p>
+          </div>
+
+          <div class="my-5">
+            <div id="hits"></div>
+          </div>
+
+          <div id="pagination"></div>
+        </div>
+      </div>
+
+      <div id="cart"></div>
+    </div>
+
+    <script
+      src="https://unpkg.com/core-js-bundle@3.6.4/minified.js"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/algoliasearch@4.0.0/dist/algoliasearch-lite.umd.js"
+      integrity="sha256-MfeKq2Aw9VAkaE9Caes2NOxQf6vUa8Av0JqcUXUGkd0="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.0.0/dist/instantsearch.production.min.js"
+      integrity="sha256-6S7q0JJs/Kx4kb/fv0oMjS855QTz5Rc2hh9AkIUjUsk="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    ></script>
+    <script src="js/fermeture.js"></script>
+
+    <script>
+      const ALGOLIA_CONFIG = {
+        // v1
+        // appId: "M6AKDBX36Z",
+        // searchKey: "200ad253b958794d0ff8a2a187d74560",
+        // v2
+        appId: "ZSB27F96MU",
+        searchKey: "991cf78786ea4d6715ea04e33ba9fe10"
+      };
+
+      const solidariteKeyword = "#CovidSolidarité";
+      const solidariteEnabled = true;
+
+      window.cart = (function() {
+        let content = window.localStorage.getItem('cart')
+          ? JSON.parse(window.localStorage.getItem('cart'))
+          : {};
+        let changeCallbacks = [];
+
+        const notifyChange = () => {
+          changeCallbacks.forEach(cb => cb(content));
+        };
+
+        return {
+          add: (sku, qty, product = {}) => {
+            if (!qty) {
+              return;
+            }
+            if (!content[sku]) {
+              content[sku] = { qty: 0 }
+            }
+            const newQty = content[sku].qty + qty;
+            content[sku] = {
+              qty: Number.isInteger(newQty) ? newQty : Number(newQty.toFixed(2)),
+              product: product
+            }
+            notifyChange();
+          },
+          remove: sku => {
+            delete content[sku];
+            notifyChange();
+          },
+          reset: () => {
+            content = {};
+            notifyChange();
+          },
+          content: () => content,
+          onChange: (cb) => {
+            changeCallbacks.push(cb);
+            cb(content);
+          }
+        }
+      })();
+
+      window.cart.onChange(updateCart);
+
+      function askQty(isVrac) {
+        if (!isVrac) {
+          return 1;
+        }
+        const qty = window.prompt("Quelle quantité souhaitez-vous (Kg) ?", "1.00");
+        return qty ? Number(qty.replace(",", ".").trim()) : 0;
+      }
+
+      function updateCart(content) {
+        if (window.localStorage) {
+          window.localStorage.setItem(
+            'cart',
+            JSON.stringify(content)
+          );
+        }
+
+        const cart = document.getElementById('cart');
+        const total = Object.values(content)
+          .map(
+            item => item.qty * item.product.price
+          )
+          .reduce(
+            (total, itemPrice) => total + itemPrice, 0
+          )
+          .toFixed(2);
+
+        if (Object.values(content).length === 0) {
+          cart.innerHTML = '';
+          return;
+        }
+
+        cart.innerHTML = `
+          <div class="fixed bottom-0 right-0 bg-gray-300 shadow-md px-6 py-2 w-full">
+            <ul class="flex flex-wrap">
+              <li class="py-1 mr-4 flex flex-col justify-center items-center text-gray-500 hover:text-red-700">
+                <button
+                  class="flex-auto"
+                  onClick="window.cart.reset()"
+                >
+                  ${feather.icons['trash'].toSvg()}
+                </button>
+                <span class="text-sm text-center">
+                  Vider
+                </span>
+              </li>
+            ${Object.keys(content).map(key => `
+              <li class="py-1 flex flex-col justify-center">
+                <img
+                  class="rounded-full mx-1 mb-1 h-12 w-12 flex items-center justify-center shadow-md"
+                  src="${decodeURI(content[key].product.image)}"
+                  title="${decodeURI(content[key].product.name)}"
+                  alt=""
+                />
+                <span class="text-sm text-center">
+                  ${content[key].qty}
+                  <button
+                    class="text-gray-500 hover:text-red-700"
+                    onClick="window.cart.remove('${key}')"
+                  >
+                    ${feather.icons['trash-2'].toSvg({
+                      class: 'inline w-4'
+                    })}
+                  </button>
+                </span>
+              </li>
+            `).join('')}
+            </ul>
+
+            <div class="flex flex-col flex-wrap py-2">
+              <a
+                class="m-auto w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 text-center"
+                title="Vérifier ma commande"
+                href="validation.html"
+              >
+                Je vérifie ma commande de ~${total}€
+                ${feather.icons['check-circle'].toSvg({
+                  class: 'inline'
+                })}
+              </a>
+              <p class="text-xs text-gray-700 text-center">
+                Le prix final exact vous sera confirmé lors de la préparation.
+              </p>
+            </div>
+          </div>
+        `;
+      }
+
+      const searchClient = algoliasearch(
+        ALGOLIA_CONFIG.appId,
+        ALGOLIA_CONFIG.searchKey
+      );
+
+      const search = instantsearch({
+        indexName: "produits",
+        searchClient,
+        routing: true,
+        initialUiState: solidariteEnabled ? {
+          produits: {
+            query: solidariteKeyword
+          }
+        } : {}
+      });
+
+      search.addWidgets([
+        instantsearch.widgets.configure({
+          hitsPerPage: 50,
+          filters: "price > 0"
+        }),
+
+        instantsearch.widgets.searchBox({
+          container: "#searchbox"
+        }),
+        instantsearch.widgets.currentRefinements({
+          container: "#current-refinements"
+        }),
+        instantsearch.widgets.stats({
+          container: "#stats"
+        }),
+
+        instantsearch.widgets.rangeSlider({
+          container: "#price",
+          attribute: "price"
+        }),
+        instantsearch.widgets.refinementList({
+          container: "#labels",
+          attribute: "labels",
+          showMore: true
+        }),
+        instantsearch.widgets.refinementList({
+          container: "#suppliers",
+          attribute: "supplier",
+          showMore: true
+        }),
+        instantsearch.widgets.refinementList({
+          container: "#states",
+          attribute: "saleState"
+        }),
+        instantsearch.widgets.hierarchicalMenu({
+          container: "#categories",
+          attributes: [
+            "categories.lvl1",
+            "categories.lvl2",
+            "categories.lvl3",
+            "categories.lvl4",
+            "categories.lvl5",
+            "categories.lvl6"
+          ]
+        }),
+
+        instantsearch.widgets.pagination({
+          container: "#pagination"
+        }),
+
+        instantsearch.widgets.hits({
+          container: "#hits",
+          templates: {
+            item(hit) {
+              const image = hit.thumbnailPath
+                ? `https://raw.githubusercontent.com/lachouettecoop/produits/master/${hit.thumbnailPath}`
+                : "https://via.placeholder.com/128?text=Aucune+image";
+
+              const addToCart = hit.qtyInStock > 0
+                ? `<button
+                  class="bg-gray-800 hover:bg-gray-700 px-4 py-2 mt-2 font-bold text-white w-full flex justify-center"
+                  onClick="window.cart.add('${hit.objectID}', askQty(${hit.isVrac}), { name: '${encodeURI(hit.name).replace(/'/g, "")}', price: ${hit.price}, image: '${encodeURI(image)}' })"
+                  title="Ajouter à ma liste de courses"
+                >
+                  ${feather.icons['shopping-bag'].toSvg()}
+                  <span class="ml-2">Ajouter</span>
+                </button>`
+                : "";
+
+              return `
+                <article class="state state--${hit.saleStateScore} flex">
+                  <div class="w-1/5 pr-2">
+                    <img
+                      class="object-left"
+                      alt=""
+                      src="${image}" />
+                  </div>
+
+                  <div class="w-3/5">
+                    <p class="text-lg font-semibold">${hit.name}</p>
+                    <p class="text-xs mt-2">
+                      <span class="shadow px-2 py-1 mr-2 bg-green-600 text-white">${hit.saleState}</span> ${hit.barCode}</p>
+
+                    <ul class="mt-4 flex flex-row items-stretch">
+                      <li class="flex-1" title="Fournisseur">${hit.supplier}</li>
+                      <li class="flex-1" title="Labels">${hit.labels}</li>
+                      <li class="flex-1" title="Origine">${hit.origin}</li>
+                    </ul>
+                  </div>
+
+                  <div class="w-1/5">
+                    <p class="text-4xl">${hit.price}€</p>
+                    <div class="flex mt-2 items-center">
+                      <p>Stock</p>
+                      <p class="ml-2 px-2 py-1 font-bold bg-gray-600 text-white" title="Quantité en stock">${hit.qtyInStock}</p>
+                    </div>
+                    ${addToCart}
+                  </div>
+                </article>
+              `;
+            }
+          },
+          cssClasses: {
+            item: "w-full"
+          }
+        }),
+
+        instantsearch.widgets.poweredBy({
+          container: "#powered-by"
+        }),
+
+        instantsearch.connectors.connectHits(
+          (renderOptions) => {
+            const { results, widgetParams } = renderOptions;
+            if (!solidariteEnabled || !results) {
+              return;
+            }
+
+            const container = document.querySelector(widgetParams.container)
+            if (results.query === solidariteKeyword) {
+              container.classList.remove('hidden');
+            } else {
+              container.classList.add('hidden');
+            }
+          }
+
+        )({
+          container: "#covid"
+        })
+      ]);
+
+      search.start();
+    </script>
+  </body>
+</html>
