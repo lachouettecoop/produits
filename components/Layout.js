@@ -1,7 +1,12 @@
 import Head from "next/head";
+import { SWRConfig } from "swr";
 
 const Layout = ({ children }) => (
-  <div>
+  <SWRConfig
+    value={{
+      fetcher: (...args) => fetch(...args).then((res) => res.json()),
+    }}
+  >
     <Head>
       <title>Le Drive — La Chouette Coop</title>
       <link
@@ -10,7 +15,7 @@ const Layout = ({ children }) => (
       />
     </Head>
 
-    <div class="container mx-auto max-w-screen-md">
+    <div className="container mx-auto max-w-screen-md">
       <header>
         <img
           className="float-right w-20 -mt-3"
@@ -25,7 +30,7 @@ const Layout = ({ children }) => (
 
       {children}
     </div>
-  </div>
+  </SWRConfig>
 );
 
 export default Layout;
