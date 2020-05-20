@@ -75,7 +75,9 @@ const CommandeItem = ({
 };
 
 const Commandes = () => {
-  const { data } = useSWR(`https://admin.lachouettecoop.fr/commandes`);
+  const { data } = useSWR(`https://admin.lachouettecoop.fr/commandes`, {
+    refreshInterval: 30000,
+  });
 
   return (
     <div className="my-4 flex flex-wrap">
