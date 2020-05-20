@@ -17,7 +17,7 @@ if (!process.env.ALGOLIA_SECRET_KEY) {
 const client = algoliasearch(ALGOLIA_APP_ID, process.env.ALGOLIA_SECRET_KEY);
 const index = client.initIndex("produits");
 const odooExport = fs.createReadStream(
-  path.join(__dirname, "product.template.csv")
+  path.join(__dirname, "../product.template.csv")
 );
 
 const prepareForIndexing = async (row) => {
@@ -52,7 +52,11 @@ const prepareForIndexing = async (row) => {
   let imgPath = null;
   if (row["Image de taille moyenne"]) {
     imgPath = `images/${row["External ID"]}.jpg`;
-    fs.writeFileSync(imgPath, row["Image de taille moyenne"], "base64");
+    fs.writeFileSync(
+      path.join(__dirname, "../public", imgPath),
+      row["Image de taille moyenne"],
+      "base64"
+    );
   }
 
   const [saleStateScore, saleStateValue] = saleStateValues(row);
@@ -134,7 +138,7 @@ algoliaIndexFacade
   .then(() => {
     console.log("Algolia indexation Finished!");
     return replace({
-      files: "./js/fermeture.js",
+      files: path.join(__dirname, "../public/js/fermeture.js"),
       from: /const CLOSED_TIMESTAMP =.*/g,
       to: `const CLOSED_TIMESTAMP = ${nextClosingDate()};`,
     });

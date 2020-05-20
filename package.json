@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "index": "rm -rf images/* && node index-data.js",
-    "start": "http-server ."
+    "index": "rm -rf public/images/* && node scripts/index-data.js",
+    "dev": "next",
+    "build": "next build && next export",
+    "start": "next start"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +15,9 @@
   "dependencies": {
     "algoliasearch": "^4.0.3",
     "neat-csv": "^5.2.0",
+    "next": "^9.4.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "replace-in-file": "^5.0.2"
   },
   "devDependencies": {
