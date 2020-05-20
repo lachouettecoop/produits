@@ -174,27 +174,29 @@
             return `${id}=${content[key].qty}`
           })
           .join('&')
-
-        return {
-          items: Object.values(content),
-          total: Object.values(content)
+        const total = Object.values(content)
             .map(
               item => item.qty * item.product.price
             )
             .reduce(
               (total, itemPrice) => total + itemPrice, 0
             )
-            .toFixed(2),
+
+        return {
+          items: Object.values(content),
+          total: total.toFixed(2),
           url: url,
           state: 'loaded',
           formData: {
+            total: total,
             codeCommande: url,
             notes: ""
           }
         };
       }
 
-      const graph = graphql("https://api.lachouettecoop.fr/", {
+      //const graph = graphql("https://api.lachouettecoop.fr/", {
+      const graph = graphql("http://localhost:4000/", {
         asJSON: true
       });
       function send(data) {
@@ -203,6 +205,7 @@
             nom: $nom
             email: $email
             telephone: $telephone
+            total: $total
             codeCommande: $codeCommande
             notes: $notes
           }) {
