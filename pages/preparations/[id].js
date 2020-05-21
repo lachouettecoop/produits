@@ -198,7 +198,12 @@ const Page = () => (
 );
 
 export async function getStaticPaths() {
-  return { paths: [], fallback: true };
+  return {
+    paths: Array.from(Array(1000)).map((_, id) => ({
+      params: { id: id.toString() },
+    })),
+    fallback: true,
+  };
 }
 export async function getStaticProps() {
   return { props: {} };
