@@ -5,10 +5,18 @@ import { classForStatut, sortByWorkflow } from "domain/commandes";
 const StatutFilters = ({ value, onChange, commandes }) => {
   const statuses =
     commandes &&
-    commandes.reduce((acc, { statut }) => {
+    commandes.reduce((acc, { statut, total }) => {
+      const current = acc[statut] || {
+        count: 0,
+        total: 0,
+      };
+
       return {
         ...acc,
-        [statut]: acc[statut] ? acc[statut] + 1 : 1,
+        [statut]: {
+          count: current.count + 1,
+          total: current.total + Number(total),
+        },
       };
     }, {});
 
@@ -22,14 +30,19 @@ const StatutFilters = ({ value, onChange, commandes }) => {
             return (
               <button
                 className={cn(
-                  "px-4 py-2 text-white font-bold",
+                  "px-4 py-2 text-white font-bold flex flex-col",
                   classForStatut(status),
                   { "shadow-md": isActive, underline: isActive }
                 )}
                 onClick={() => onChange(isActive ? null : status)}
                 key={status}
               >
-                {status} ×{statuses[status]}
+                <span>
+                  {status} ×{statuses[status].count}
+                </span>
+                <span className="text-xs">
+                  {Math.round(statuses[status].total)} €
+                </span>
               </button>
             );
           })
