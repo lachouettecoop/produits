@@ -21,7 +21,7 @@ const Layout = ({ children }) => (
         <img
           className="float-right w-20 -mt-3"
           alt="Logo de La Chouette Coop"
-          src="logo.jpg"
+          src="/logo.jpg"
         />
         <h1 className="mt-3 mb-5 text-2xl">
           <strong className="font-bold text-4xl">Le Drive</strong> de La
