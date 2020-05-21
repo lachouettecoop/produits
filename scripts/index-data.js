@@ -3,6 +3,7 @@ const csv = require("neat-csv");
 const fs = require("fs");
 const path = require("path");
 const replace = require("replace-in-file");
+const got = require("got");
 
 // const ALGOLIA_APP_ID = "M6AKDBX36Z"; // v1
 const ALGOLIA_APP_ID = "ZSB27F96MU"; // v2
@@ -142,5 +143,29 @@ algoliaIndexFacade
       from: /const CLOSED_TIMESTAMP =.*/g,
       to: `const CLOSED_TIMESTAMP = ${nextClosingDate()};`,
     });
+  })
+  .then(async () => {
+    const ADMIN_URL = "https://admin.lachouettecoop.fr";
+
+    console.log("Archiving delivered orders");
+    const commandes = await got(
+      `${ADMIN_URL}/commandes?statut_eq=livree`
+    ).json();
+
+    console.log(commandes.length, "orders will be archived");
+    return (
+      IS_TEST_MODE ||
+      Promise.all(
+        commandes.map((commande) =>
+          got.put(`${ADMIN_URL}/commandes/${commande.id}`, {
+            json: {
+              statut: "archivee",
+            },
+          })
+        )
+      ).then((orders) =>
+        console.log(orders.length, "orders have been archived")
+      )
+    );
   })
   .catch((e) => console.log("ERROR", e));
