@@ -21,7 +21,7 @@ const Total = ({ commandes }) => {
 
 const Commandes = () => {
   const { data } = useSWR(
-    "/commandes?statut_ne=archivee&_sort=created_at:DESC",
+    "/commandes?statut_ne=archivee&_sort=created_at:ASC",
     {
       refreshInterval: 30000,
     }
