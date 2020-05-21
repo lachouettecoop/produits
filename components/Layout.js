@@ -1,12 +1,13 @@
 import Head from "next/head";
 import { SWRConfig } from "swr";
 
+export const fetcher = (url, ...args) =>
+  fetch(`https://admin.lachouettecoop.fr${url}`, ...args).then((res) =>
+    res.json()
+  );
+
 const Layout = ({ children }) => (
-  <SWRConfig
-    value={{
-      fetcher: (...args) => fetch(...args).then((res) => res.json()),
-    }}
-  >
+  <SWRConfig value={{ fetcher }}>
     <Head>
       <title>Le Drive — La Chouette Coop</title>
       <link

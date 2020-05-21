@@ -1,5 +1,5 @@
 import CommandeItem from "components/CommandeItem";
-import Layout from "components/Layout";
+import Layout, { fetcher } from "components/Layout";
 import StatutFilters from "components/StatutFilters";
 import { Fragment, useState } from "react";
 import Skeleton from "react-loading-skeleton";
@@ -21,9 +21,10 @@ const Total = ({ commandes }) => {
 
 const Commandes = () => {
   const { data } = useSWR(
-    "https://admin.lachouettecoop.fr/commandes?statut_ne=archivee&_sort=created_at:DESC",
+    ["/commandes", "?statut_ne=archivee&_sort=created_at:DESC"],
     {
       refreshInterval: 30000,
+      fetcher: (...parts) => fetcher(parts.join("")),
     }
   );
 

@@ -17,3 +17,19 @@ export const classForStatut = (value) => ({
 export const sortByWorkflow = (a, b) => {
   return statutWorkflow.indexOf(a) - statutWorkflow.indexOf(b);
 };
+
+export const previousStatutOf = (statut) => {
+  const index = statutWorkflow.indexOf(statut);
+  if (index <= 0) {
+    return null;
+  }
+  return statutWorkflow[index - 1];
+};
+
+export const nextStatutOf = (statut) => {
+  const index = statutWorkflow.indexOf(statut);
+  if (index === -1 || index + 1 > statutWorkflow.length - 1) {
+    return null;
+  }
+  return statutWorkflow[index + 1];
+};
