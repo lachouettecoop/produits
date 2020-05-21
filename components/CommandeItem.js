@@ -25,7 +25,7 @@ const CommandeItem = ({
         <StatutUpdater currentValue={statut} id={id} />
       </div>
       <a
-        className="py-4 px-8 flex flex-col justify-between"
+        className="py-4 px-8 h-full flex flex-col justify-between"
         href={code ? `/preparation.html?${code}` : "#"}
       >
         <div>
