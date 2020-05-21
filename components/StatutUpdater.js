@@ -5,13 +5,31 @@ import {
 } from "domain/commandes";
 import cn from "classnames";
 import Skeleton from "react-loading-skeleton";
-import { FiEdit, FiCheckCircle, FiRewind, FiXCircle } from "react-icons/fi";
-import { useState, Fragment } from "react";
+import {
+  FiEdit,
+  FiCheckCircle,
+  FiRewind,
+  FiXCircle,
+  FiActivity,
+} from "react-icons/fi";
+import { useState, Fragment, useEffect } from "react";
 import Modal from "react-modal";
 import { mutate, cache } from "swr";
 import { fetcher } from "./Layout";
 
 Modal.setAppElement("#__next");
+
+const doUpdate = async (id, newStatut) => {
+  await fetcher(`/commandes/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      statut: newStatut,
+    }),
+  });
+
+  const cacheKeys = cache.keys().filter((key) => key.startsWith("/commandes"));
+  cacheKeys.forEach((key) => mutate(key));
+};
 
 const Statut = ({ value, onEdit }) => {
   if (!value) {
@@ -34,21 +52,46 @@ const Statut = ({ value, onEdit }) => {
   );
 };
 
+const ArchiverButton = ({ id, onSuccess }) => {
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    if (step < 2) return;
+
+    doUpdate(id, "archivee").then(onSuccess);
+  }, [step]);
+
+  const handleNext = () => setStep((step) => step + 1);
+
+  return (
+    <button
+      className="m-auto text-red-500 text-xs hover:underline"
+      onClick={handleNext}
+    >
+      {step === 0 &&
+        "Je veux marquer cette commande comme étant une erreur et l'enlever des listings."}
+      {step === 1 && (
+        <span className="text-xl">
+          <strong>ATTENTION</strong> cette opération est définitive.
+          <br />
+          Cliquez à nouveau si vous êtes sûr·e de savoir ce que vous faites ?
+          ;-)
+        </span>
+      )}
+      {step === 2 && (
+        <span className="text-xl">
+          <FiActivity className="inline" /> Suppression en cours…
+        </span>
+      )}
+    </button>
+  );
+};
+
 const ChangeStatutButton = ({ id, newStatut, variant, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const handleClick = async () => {
     setIsLoading(true);
-    await fetcher(`/commandes/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        statut: newStatut,
-      }),
-    });
 
-    const cacheKeys = cache
-      .keys()
-      .filter((key) => key.startsWith("/commandes"));
-    cacheKeys.forEach((key) => mutate(key));
+    await doUpdate(id, newStatut);
 
     setIsLoading(false);
     onSuccess();
@@ -149,6 +192,9 @@ const StatutUpdater = ({ currentValue, id }) => {
                 />
               )}
             </div>
+            <p className="text-center">
+              <ArchiverButton id={id} onSuccess={handleClose} />
+            </p>
           </div>
         </div>
       </Modal>
