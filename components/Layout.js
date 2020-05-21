@@ -23,7 +23,7 @@ const Layout = ({ children }) => (
           alt="Logo de La Chouette Coop"
           src="/logo.jpg"
         />
-        <h1 className="mt-3 mb-5 text-2xl">
+        <h1 className="mt-3 mb-5 text-2xl no-print">
           <strong className="font-bold text-4xl">Le Drive</strong> de La
           Chouette Coop
         </h1>

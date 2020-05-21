@@ -8,6 +8,7 @@ import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
 import { AiOutlineBarcode } from "react-icons/ai";
 import algoliasearch from "algoliasearch/lite";
+import StatutUpdater from "../../components/StatutUpdater";
 
 const ALGOLIA_CONFIG = {
   // v1
@@ -130,14 +131,21 @@ const Preparation = () => {
     <main>
       <div className="flex items-center">
         <Link href="/preparations">
-          <a className="w-1/2 hover:underline text-gray-600 hover:text-gray-800 flex items-center">
+          <a className="no-print w-1/2 hover:underline text-gray-600 hover:text-gray-800 flex items-center">
             <span className="border-2 rounded-full inline-block mr-2 p-1">
               <FiArrowLeft />
             </span>
             Revenir à la liste des commandes
           </a>
         </Link>
-        <span className="w-1/2 font-bold text-4xl text-right">#{id}</span>
+        <div className="w-1/2 text-right">
+          <span className="font-bold text-4xl">#{id}</span>
+          {data && data.statut && (
+            <span className="no-print ml-4">
+              <StatutUpdater id={id} currentValue={data.statut} />
+            </span>
+          )}
+        </div>
       </div>
       <div className="border-2 my-3 py-3 px-4 clear-both">
         <div className="flex">
