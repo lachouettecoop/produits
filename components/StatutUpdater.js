@@ -8,6 +8,8 @@ import Skeleton from "react-loading-skeleton";
 import { FiEdit, FiCheckCircle, FiRewind, FiXCircle } from "react-icons/fi";
 import { useState, Fragment } from "react";
 import Modal from "react-modal";
+import { mutate, cache } from "swr";
+import { fetcher } from "./Layout";
 
 Modal.setAppElement("#__next");
 
@@ -17,21 +19,40 @@ const Statut = ({ value, onEdit }) => {
   }
 
   return (
-    <div className={cn("text-white shadow rounded", classForStatut(value))}>
+    <button
+      className={cn(
+        "text-white shadow rounded",
+        classForStatut(value),
+        "hover:underline"
+      )}
+      onClick={() => onEdit()}
+      title="Modifier"
+    >
       <span className="pl-2 pr-1 py-1">{value}</span>
-      <button
-        className="pl-1 pr-2 py-1 inline hover:text-red-300"
-        onClick={() => onEdit()}
-        title="Modifier"
-      >
-        <FiEdit />
-      </button>
-    </div>
+      <FiEdit className="ml-1 mr-2 inline" />
+    </button>
   );
 };
 
-const ChangeStatutButton = ({ id, newStatut, variant }) => {
-  console.log({ newStatut });
+const ChangeStatutButton = ({ id, newStatut, variant, onSuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const handleClick = async () => {
+    setIsLoading(true);
+    await fetcher(`/commandes/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        statut: newStatut,
+      }),
+    });
+
+    const cacheKeys = cache
+      .keys()
+      .filter((key) => key.startsWith("/commandes"));
+    cacheKeys.forEach((key) => mutate(key));
+
+    setIsLoading(false);
+    onSuccess();
+  };
 
   return (
     <button
@@ -42,10 +63,18 @@ const ChangeStatutButton = ({ id, newStatut, variant }) => {
           "font-bold": variant === "next",
         }
       )}
+      onClick={handleClick}
+      disabled={isLoading}
     >
-      {variant === "previous" && <FiRewind className="inline mr-2" />}
-      <span>{newStatut}</span>
-      {variant === "next" && <FiCheckCircle className="inline ml-2" />}
+      {isLoading ? (
+        "Modification en cours …"
+      ) : (
+        <Fragment>
+          {variant === "previous" && <FiRewind className="inline mr-2" />}
+          <span>{newStatut}</span>
+          {variant === "next" && <FiCheckCircle className="inline ml-2" />}
+        </Fragment>
+      )}
     </button>
   );
 };
@@ -56,6 +85,8 @@ const StatutUpdater = ({ currentValue, id }) => {
   const next = nextStatutOf(currentValue);
 
   const handleClose = () => setIsEdition(false);
+
+  // TODO Url pour édition cf https://github.com/zeit/next.js/blob/canary/examples/with-route-as-modal/pages/index.js#L16
 
   return (
     <Fragment>
@@ -106,10 +137,16 @@ const StatutUpdater = ({ currentValue, id }) => {
                   id={id}
                   newStatut={previous}
                   variant="previous"
+                  onSuccess={handleClose}
                 />
               )}
               {next && (
-                <ChangeStatutButton id={id} newStatut={next} variant="next" />
+                <ChangeStatutButton
+                  id={id}
+                  newStatut={next}
+                  variant="next"
+                  onSuccess={handleClose}
+                />
               )}
             </div>
           </div>
