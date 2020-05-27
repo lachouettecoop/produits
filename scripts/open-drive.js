@@ -5,8 +5,8 @@ const replace = require("replace-in-file");
 const got = require("got");
 const Odoo = require("odoo-xmlrpc");
 
-// const ALGOLIA_APP_ID = "M6AKDBX36Z"; // v1
-const ALGOLIA_APP_ID = "ZSB27F96MU"; // v2
+const ALGOLIA_APP_ID = "M6AKDBX36Z"; // v1
+// const ALGOLIA_APP_ID = "ZSB27F96MU"; // v2
 const IS_TEST_MODE = process.env.LCC_DRY_RUN || false;
 
 if (!process.env.ALGOLIA_SECRET_KEY) {
