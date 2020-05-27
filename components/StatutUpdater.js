@@ -2,6 +2,7 @@ import {
   classForStatut,
   previousStatutOf,
   nextStatutOf,
+  labelOf,
 } from "domain/commandes";
 import cn from "classnames";
 import Skeleton from "react-loading-skeleton";
@@ -39,14 +40,14 @@ const Statut = ({ value, onEdit }) => {
   return (
     <button
       className={cn(
-        "text-white shadow rounded",
+        "text-white shadow rounded text-sm",
         classForStatut(value),
         "hover:underline"
       )}
       onClick={() => onEdit()}
       title="Modifier"
     >
-      <span className="pl-2 pr-1 py-1">{value}</span>
+      <span className="pl-2 pr-1 py-1">{labelOf(value)}</span>
       <FiEdit className="ml-1 mr-2 inline" />
     </button>
   );
@@ -114,7 +115,7 @@ const ChangeStatutButton = ({ id, newStatut, variant, onSuccess }) => {
       ) : (
         <Fragment>
           {variant === "previous" && <FiRewind className="inline mr-2" />}
-          <span>{newStatut}</span>
+          <span>{labelOf(newStatut)}</span>
           {variant === "next" && <FiCheckCircle className="inline ml-2" />}
         </Fragment>
       )}
@@ -166,7 +167,7 @@ const StatutUpdater = ({ currentValue, id }) => {
               "text-white text-center py-8 flex flex-col"
             )}
           >
-            <span className="text-4xl font-bold">{currentValue}</span>
+            <span className="text-4xl font-bold">{labelOf(currentValue)}</span>
             <span className="">Statut actuel</span>
           </p>
 

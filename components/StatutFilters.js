@@ -1,6 +1,6 @@
 import cn from "classnames";
 import Skeleton from "react-loading-skeleton";
-import { classForStatut, sortByWorkflow } from "domain/commandes";
+import { classForStatut, sortByWorkflow, labelOf } from "domain/commandes";
 
 const StatutFilters = ({ value, onChange, commandes }) => {
   const statuses =
@@ -38,7 +38,7 @@ const StatutFilters = ({ value, onChange, commandes }) => {
                 key={status}
               >
                 <span>
-                  {status} ×{statuses[status].count}
+                  {labelOf(status)} ×{statuses[status].count}
                 </span>
                 <span className="text-xs">
                   {Math.round(statuses[status].total)} €

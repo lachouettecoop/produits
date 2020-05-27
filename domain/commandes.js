@@ -1,17 +1,12 @@
-const statutWorkflow = [
-  "nouvelle",
-  "imprimee",
-  "preparation",
-  "prete",
-  "livree",
-];
+const statutWorkflow = ["nouvelle", "imprimee", "preparee", "caisse", "livree"];
+const labels = ["Nouvelle", "Imprimée", "Préparée", "Caisse OK", "Livrée"];
 
 export const classForStatut = (value) => ({
-  "bg-green-400": value === "nouvelle",
-  "bg-green-500": value === "imprimee",
-  "bg-green-600": value === "preparation",
-  "bg-green-700": value === "prete",
-  "bg-green-900": value === "livree",
+  "bg-green-400": value === statutWorkflow[0],
+  "bg-green-500": value === statutWorkflow[1],
+  "bg-green-600": value === statutWorkflow[2],
+  "bg-green-700": value === statutWorkflow[3],
+  "bg-green-900": value === statutWorkflow[4],
 });
 
 export const sortByWorkflow = (a, b) => {
@@ -33,3 +28,5 @@ export const nextStatutOf = (statut) => {
   }
   return statutWorkflow[index + 1];
 };
+
+export const labelOf = (statut) => labels[statutWorkflow.indexOf(statut)];
