@@ -79,10 +79,6 @@ const prepareForIndexing = async (row) => {
   }
 
   const [saleStateScore, saleStateValue] = saleStateValues(row);
-  if (row.barcode === "4046871002992") {
-    console.log("doit être Bryo", valueOfIdField("seller_ids"));
-    console.log(row);
-  }
   return {
     objectID: `__export__.product_template_${row.id}`,
     // id: row.id,
