@@ -1,10 +1,10 @@
 import Head from "next/head";
 import { SWRConfig } from "swr";
 
+const ADMIN_URL = "https://admin.lachouettecoop.fr";
+
 export const fetcher = (url, ...args) =>
-  fetch(`https://admin.lachouettecoop.fr${url}`, ...args).then((res) =>
-    res.json()
-  );
+  fetch(ADMIN_URL + url, ...args).then((res) => res.json());
 
 const Layout = ({ children }) => (
   <SWRConfig value={{ fetcher }}>
