@@ -1,4 +1,4 @@
-const CLOSED_TIMESTAMP = 1591365600901;
+const CLOSED_TIMESTAMP = 1591441200392;
 
 function checkClosed() {
   if (Date.now() > CLOSED_TIMESTAMP) {
