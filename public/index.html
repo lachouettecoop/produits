@@ -96,35 +96,6 @@
             <div id="stats"></div>
           </div>
 
-          <div id="covid" class="hidden py-4 px-6 bg-gray-200">
-            <h1 class="mb-7 text-xl">
-              <strong class="font-bold text-2xl">RE-ACTION* :</strong> collecte de produits d'hygiène pour les sans-abris
-            </h1>
-
-            <p class="my-2">
-              <strong>Chouettos, participe à la constitution de kits d'hygiène pour les sans-abris !</strong><br>
-              Pour cela, précommande sur ce site un ou plusieurs produit(s) suivant(s) :
-            </p>
-            <ul class="list-inside list-disc">
-              <li>Brosse à dent (sous conditionnement)</li>
-              <li>Dentifrice</li>
-              <li>Gel savon / douche (pas de savon solide !)</li>
-              <li>Mouchoirs</li>
-              <li>Papier toilette</li>
-              <li>Tampons et/ou serviettes hygiéniques</li>
-            </ul>
-
-            <p class="my-4">
-              Puis une fois au Lab pour le retrait de ta commande, vérifie-la avec le·la GH et <strong>dépose ton don dans le carton prévu à cet effet au Lab (demande au GH ;-))</strong>.<br>
-              Astuce : les produits correspondant à la collecte sont signalés par les mots (hashtag) « <strong>#CovidSolidarite</strong> » sur ta commande.
-            </p>
-
-
-            <p class="italic text-xs">
-              * La Chouette Coop participe à RE-ACTION, une opération des associations Makesense, La Chorba et La Cloche.
-            <p>
-          </div>
-
           <div class="my-5">
             <div id="hits"></div>
           </div>
@@ -163,9 +134,6 @@
         // appId: "ZSB27F96MU",
         // searchKey: "991cf78786ea4d6715ea04e33ba9fe10"
       };
-
-      const solidariteKeyword = "#CovidSolidarité";
-      const solidariteEnabled = true;
 
       window.cart = (function() {
         let content = window.localStorage.getItem('cart')
@@ -306,11 +274,7 @@
         indexName: "produits",
         searchClient,
         routing: true,
-        initialUiState: solidariteEnabled ? {
-          produits: {
-            query: solidariteKeyword
-          }
-        } : {}
+        initialUiState: {}
       });
 
       search.addWidgets([
@@ -427,21 +391,11 @@
         instantsearch.connectors.connectHits(
           (renderOptions) => {
             const { results, widgetParams } = renderOptions;
-            if (!solidariteEnabled || !results) {
+            if (!results) {
               return;
             }
-
-            const container = document.querySelector(widgetParams.container)
-            if (results.query === solidariteKeyword) {
-              container.classList.remove('hidden');
-            } else {
-              container.classList.add('hidden');
-            }
           }
-
-        )({
-          container: "#covid"
-        })
+        )()
       ]);
 
       search.start();
