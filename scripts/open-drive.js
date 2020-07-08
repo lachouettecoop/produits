@@ -1,7 +1,6 @@
 const algoliasearch = require("algoliasearch");
 const fs = require("fs");
 const path = require("path");
-const replace = require("replace-in-file");
 const got = require("got");
 const Odoo = require("odoo-xmlrpc");
 
@@ -101,31 +100,6 @@ const prepareForIndexing = async (row) => {
     "categories.lvl5": categoryValue(5),
     "categories.lvl6": categoryValue(6),
   };
-};
-
-const nextClosingDate = () => {
-  const CLOSING_HOUR = {
-    WEEKDAY: 16,
-    SATURDAY: 13,
-  };
-
-  const currDay = new Date().getDay();
-  if ([0, 1, 2].includes(currDay)) {
-    return Date.now() - 1;
-  }
-
-  const closingDate = new Date();
-  if (currDay === 5 && new Date().getHours() > 19) {
-    // saturday's stock could be updated on friday evening too
-    const ONE_DAY = 24 * 60 * 60 * 1000;
-    closingDate.setHours(CLOSING_HOUR.SATURDAY, 0, 0);
-    return closingDate.getTime() + ONE_DAY;
-  }
-
-  const closingHour =
-    currDay === 6 ? CLOSING_HOUR.SATURDAY : CLOSING_HOUR.WEEKDAY;
-  closingDate.setHours(closingHour, 0, 0);
-  return closingDate.getTime();
 };
 
 const fakeAlgoliaIndex = {
@@ -256,13 +230,6 @@ const getOdooProducts = async (odoo) => {
     autoGenerateObjectIDIfNotExist: true,
   });
   console.log("Algolia indexation Finished!");
-
-  console.log("Opening the Drive!");
-  await replace({
-    files: path.join(__dirname, "../public/js/fermeture.js"),
-    from: /const CLOSED_TIMESTAMP =.*/g,
-    to: `const CLOSED_TIMESTAMP = ${nextClosingDate()};`,
-  });
 
   console.log("Archiving delivered orders");
   const ADMIN_URL = "https://admin.lachouettecoop.fr";
