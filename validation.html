@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
 
-    <title>Valider votre commande Drive — La Chouette Coop</title>
+    <title>Votre liste de courses — La Chouette Coop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
@@ -12,6 +12,18 @@
     />
 
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine-ie11.min.js" defer></script>
+    <style>
+      @media print {
+        .no-print,
+        .no-print * {
+          display: none !important;
+        }
+        .print-transparent {
+          background-color: transparent !important;
+          box-shadow: none !important;
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -21,27 +33,26 @@
         alt="Logo de La Chouette Coop"
         src="logo.jpg"
       />
-      <h1 class="mt-5 mb-7 text-2xl">
-        <strong class="font-bold text-4xl">Le Drive</strong> de La Chouette Coop
+      <h1 class="mt-5 mb-7 text-2xl no-print">
+        <strong class="font-bold text-4xl"><del>Le Drive</del> Les produits</strong> de La Chouette Coop
       </h1>
 
-      <div class="bg-red-200 my-5 py-3 px-4">
-        <p class="font-bold mb-2">
-          <strong>Cette plateforme de commande est encore imparfaite</strong>, aidez-nous
-          <a href="mailto:contact@pierre-martin.fr?subject=Bug rencontré sur le Drive LCC" class="underline hover:no-underline">en remontant les bugs rencontrés.</a>
-        </p>
-      </div>
-
-      <h2 class="text-2xl pt-4 mb-4">Vérifiez votre commande avant de l'envoyer</h2>
-      <a href="/" class="text-gray-700 hover:text-black">&larr; Modifier la commande</a>
+      <h2 class="text-2xl pt-4 mb-4">
+        <span>Votre liste de courses<span>
+        <button onClick="window.print()" class="ml-4 text-gray-700 hover:text-black no-print text-sm">
+          Imprimer
+          <i data-feather="printer" class="inline"></i>
+        </button>
+      </h2>
+      <a href="/" class="text-gray-700 hover:text-black no-print">&larr; Modifier la liste</a>
 
       <div x-data="getCart()">
-        <div class="bg-gray-300 shadow-md px-6 py-4 w-full">
+        <div class="bg-gray-300 shadow-md px-6 py-4 w-full print-transparent">
           <ul class="flex flex-col flex-wrap">
             <template x-for="item in items">
               <li class="py-1 mb-2 flex justify-left items-center">
                 <img
-                  class="rounded-full h-12 w-12 shadow-md"
+                  class="rounded-full h-12 w-12 shadow-md no-print"
                   x-bind:src="decodeURI(item.product.image)"
                   x-bind:title="decodeURI(item.product.name)"
                   alt=""
@@ -59,89 +70,6 @@
               </li>
             </template>
           </ul>
-
-          <form
-            action="#"
-            x-on:submit.prevent="state = 'sending'; send(formData);"
-          >
-            <fieldset class="mt-8 mb-4" x-bind:disabled="state === 'sending' ? 'disabled' : false">
-              <h2 class="text-xl mb-6">
-                Envoyer ma commande
-              </h2>
-
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm mb-2" for="nom">
-                  Prénom / Nom <span class="text-red-700">*</span>
-                </label>
-                <input
-                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="nom"
-                  x-model="formData.nom"
-                  type="text"
-                  placeholder="Jean Tibou"
-                  required
-                >
-              </div>
-
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm mb-2" for="email">
-                  Email <span class="text-red-700">*</span>
-                </label>
-                <input
-                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="email"
-                  x-model="formData.email"
-                  type="email"
-                  placeholder="jean.tibou@exemple.fr"
-                  required
-                >
-              </div>
-
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm mb-2" for="telephone">
-                  N° de téléphone <span class="text-red-700">*</span>
-                </label>
-                <input
-                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="telephone"
-                  x-model="formData.telephone"
-                  type="tel"
-                  placeholder="0602030405"
-                  required
-                >
-                <p class="text-gray-700 text-xs mt-1">
-                  Pour que la personne préparant votre commande puisse vous joindre si besoin, et vous informer lorsque la commande sera prête.
-                </p>
-              </div>
-
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm mb-2" for="notes">
-                  Notes additionnelles
-                </label>
-                <textarea
-                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="notes"
-                  x-model="formData.notes"
-                  rows="5"
-                ></textarea>
-              </div>
-            </fieldset>
-
-            <div class="flex flex-col flex-wrap py-2">
-              <p class="mb-2">
-                Le prix final exact vous sera confirmé une fois la préparation terminée.
-              </p>
-              <button
-                class="m-auto w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 text-center"
-                type="submit"
-                x-bind:disabled="state === 'sending' ? 'disabled' : false"
-                x-text="state === 'sending' ? 'Envoi en cours…' : `Je valide ma commande de ~${total}€`"
-              ></button>
-              <p class="text-sm text-gray-700 text-center mt-1">
-                En cas de problème, veuillez transmettre le code <code class="select-all truncate font-mono px-1 bg-gray-100" x-text="url"></code> par email à <a href="mailto:drive@lachouettecoop.fr" class="underline">drive@lachouettecoop.fr</a>
-              </p>
-            </div>
-          </form>
         </div>
       </div>
 
@@ -156,7 +84,6 @@
     <script
       src="//cdn.jsdelivr.net/npm/graphql.js@0.6.6/graphql.min.js"
     ></script>
-    <script src="js/fermeture.js"></script>
 
     <script>
       function getCart() {
@@ -190,41 +117,7 @@
         };
       }
 
-      const graph = graphql("https://api.lachouettecoop.fr/", {
-        asJSON: true
-      });
-      function send(data) {
-        const passerCommande = graph.mutate(`(@autodeclare) {
-          passerCommande(input:{
-            nom: $nom
-            email: $email
-            telephone: $telephone
-            total: $total
-            codeCommande: $codeCommande
-            notes: $notes
-          }) {
-            success
-          }
-        }`);
-
-        passerCommande(data)
-          .then((response) => {
-            if (response && response.passerCommande && response.passerCommande.success) {
-              window.alert("La commande a bien été envoyée, merci.\nNous vous contacterons lorsqu'elle sera prête.");
-              window.location.href = "/";
-            } else {
-              throw new Error(response);
-            }
-          })
-          .catch(function (error) {
-            window.alert(
-              "Une erreur est survenue lors de l'envoi de la commande. Si le problème continue, suivre les indications détaillées sous le bouton d'envoi.\n\n" +
-              JSON.stringify(error, null, 2)
-            );
-            window.location.reload();
-          })
-      }
-
+      feather.replace();
     </script>
   </body>
 </html>
