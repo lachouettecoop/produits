@@ -21,6 +21,16 @@ npm run start
 
 Ouvrez ensuite http://localhost:8080/
 
+### Mettre à jour le catalogue
+
+Pour cela, il faut déclencher [le workflow Github « Ouverture du drive »](https://github.com/lachouettecoop/produits/actions?query=workflow%3A%22Ouverture+du+Drive%22).
+
+Cela peut se faire en CLI :
+
+```
+http --auth NOM_UTILISATEUR:VOTRE_AUTH_TOKEN POST "https://api.github.com/repos/lachouettecoop/produits/dispatches" event_type="open"
+```
+
 ### Ouvrir le Drive
 
 Procédure pour :
