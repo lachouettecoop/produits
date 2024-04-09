@@ -1,8 +1,9 @@
 name: Ouverture du Drive
 
 on:
-  repository_dispatch:
-    types: [open]
+  push:
+    branches:
+      - master
 
 env:
   TZ: Europe/Paris
