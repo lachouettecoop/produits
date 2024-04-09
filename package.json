@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "open_drive": "rm -rf public/images/* && node scripts/open-drive.js",
+    "open_drive": "rm -rf public/images/* && mkdir -p public/images/ && node scripts/open-drive.js",
     "dev": "next",
     "build": "next build && next export",
     "start": "next start"
