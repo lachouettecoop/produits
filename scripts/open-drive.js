@@ -230,22 +230,4 @@ const getOdooProducts = async (odoo) => {
     autoGenerateObjectIDIfNotExist: true,
   });
   console.log("Algolia indexation Finished!");
-
-  console.log("Archiving delivered orders");
-  const ADMIN_URL = "https://admin.lachouettecoop.fr";
-  const commandes = await got(`${ADMIN_URL}/commandes?statut_eq=livree`).json();
-
-  console.log(commandes.length, "orders will be archived");
-  if (IS_TEST_MODE) {
-    console.log("TEST MODE enabled. Doing nothing");
-  } else {
-    const orders = await Promise.all(
-      commandes.map((commande) =>
-        got.put(`${ADMIN_URL}/commandes/${commande.id}`, {
-          json: { statut: "archivee" },
-        })
-      )
-    );
-    console.log(orders.length, "orders have been archived");
-  }
 })().catch((e) => console.log("ERROR", e));
