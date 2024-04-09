@@ -20,15 +20,18 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.PAT_TOKEN }}
+          
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      
       - name: npm install
         run: |
           npm install
         env:
           CI: true
+      
       - name: open drive
         run: |
           npm run open_drive
@@ -37,6 +40,7 @@ jobs:
           ALGOLIA_SECRET_KEY: ${{ secrets.ALGOLIA_SECRET_KEY }}
           ODOO_USER: ${{ secrets.ODOO_USER }}
           ODOO_PASSWORD: ${{ secrets.ODOO_PASSWORD }}
+      
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Mise à jour du jour
