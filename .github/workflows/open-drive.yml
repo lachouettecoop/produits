@@ -3,6 +3,9 @@ name: Ouverture du Drive
 on:
   schedule:
     - cron: '0 0 * * *'
+  push:
+    branches:
+      - master
   repository_dispatch:
     types: [open]
 
@@ -49,3 +52,4 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Mise à jour des produits au jour ${{ env.CURRENT_DATE }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
