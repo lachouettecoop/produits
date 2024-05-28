@@ -9,7 +9,9 @@ export default function Home() {
 
     return (
       <div className="">
-        Commandes
+        <div>Commandes</div>
+        <div>commande en cours du user</div>
+        <div>commande passé du user</div>
 
         {JSON.stringify(data)}
       </div>
