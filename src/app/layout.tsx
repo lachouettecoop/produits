@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Link from 'next/link'
-import { Montserrat } from 'next/font/google';
-const montserrat = Montserrat({ subsets: ['latin'] });
+import { Montserrat } from "next/font/google";
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,18 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex flex-col">
-
-        <Link href="/">home</Link>
-        <Link href="/login">login</Link>
-        <Link href="/commandes">commandes</Link>
-        <Link href="/preparations">preparations</Link>
-        <Link href="/preparations?id=33">preparation 33</Link>
-        </div>
         <div className={montserrat.className}>
-          <main className="bg-gray-100 min-h-screen">
-            {children}
-          </main>
+          <main className="bg-gray-100 min-h-screen">{children}</main>
         </div>
       </body>
     </html>
